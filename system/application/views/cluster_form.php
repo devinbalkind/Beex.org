@@ -601,7 +601,7 @@ var num_extra_admins = 1;
                     <tr>
                      <td colspan="2">
                         <table style="border:1px solid #aaa; width:100%; padding:5%;">
-                         
+                        
                          <tr>
     
                             <td class="label"><label>Name:</label></td>

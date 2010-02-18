@@ -34,6 +34,15 @@
 
 <script language="javascript" type="text/javascript" src="<?php echo base_url(); ?>scripts/beex.js"></script>
 
+<!--[if lte IE 6]>
+	<script type="text/javascript" src="<?php echo base_url(); ?>scripts/superslight-min.js"></script>
+    <script type="text/javascript" >
+    	jQuery(document).ready(function(){
+    		jQuery("#Logo").supersleight({shim: '<?php echo base_url(); ?>/images/header/x.gif'}); 
+        });
+    </script>
+<![endif]-->
+
 <script>
 
 $(document).ready(function(){
@@ -52,27 +61,38 @@ $(document).ready(function(){
 
 <body>
 
-
-
 <div id="Header">
 
  <div id="SubHeader">
 
-  <?php echo anchor("site/", '<img id="Logo" src="<?php echo base_url(); ?>/images/header/logo-beat.png" />'); ?>
- 
+  <?php echo anchor("site/", '<img id="Logo" src="'.base_url().'/images/header/logo-beat.png" />'); ?>
+  <form id="SearchForm" method="POST" action="/index.php/search/"><input type="input" name="searchterm" value="Search..." class="search" style="float:left; margin:1px 4px 0 0;" onfocus="this.value=''"/> <input type="image" value="Go!" src="<?php echo base_url(); ?>images/buttons/search.gif"  /></form>
   <div id="UpperMenu">
 
   	 <?php
 
 	 	if($user_id = $this->session->userdata('user_id')) {
+			?>
 
-	 		echo anchor('user/logout', 'Logout').' &bull; '.anchor('user/view/'.$user_id, 'My Profile');
+			<script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php" type="text/javascript"></script>
 
-		}
+
+			<script type="text/javascript">
+			       FB.init("a8656fd483cd0ba9c14474feb455bc98", "/xd_receiver.htm");
+			</script>
+			<a href="#" onclick="FB.Connect.logout(function() {
+			window.location='<?=base_url()?>index.php/user/logout' }); return
+			false;" >Logout</a>
+
+			<?
+			                       // "a8656f..." should be replaced with
+			$this->config->item('facebook_api_key');
+            echo ' &bull; '.anchor('user/view/'.$user_id, 'My Profile');
+        }
 
 		else {
 
-			echo anchor('user/login', 'Login');
+			echo anchor('user/newuser', 'Register').' | '.anchor('user/login', 'Login');
 
 		}
 

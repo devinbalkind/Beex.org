@@ -15,8 +15,8 @@ $data['item_id'] = $item_id;
                     <h3><?php echo $note->title; ?></h3>
                     <p class="copy"><?php echo $note->note; ?></p>
                     <p><a class="reply_note_button" id="reply_note<?php echo $note->id; ?>">Reply</a><?php if($owner) echo " &bull; <a class='edit_note_button' id='edit_note".$note->id."'>Edit</a> &bull; <a class='delete_note_button' id='delete_note".$note->id."'>Delete</a>"; ?></p>
-					
-					<?php //echo $this->beex->show_replies($note->id, 'notes'); ?>
+					 
+					<?php echo $this->beex->show_replies($note->id, 'notes'); ?>
 					
                 </div>
 				

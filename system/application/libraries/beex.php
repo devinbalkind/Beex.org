@@ -10,36 +10,23 @@ class Beex {
 
 		$CI =& get_instance();
 
-
-
 		$CI->load->helper('url');
-
 		$CI->load->library('session');
-
 		$CI->load->model('MItems');
-
 		$CI->config->item('base_url');
 
 	}
 
-
-
-	function do_upload($files, $filename, $uploadpath = './media/', &$error = '')
-
-	{
-
-		//$uploadpath = './media/6';
-
-		if(!file_exists($uploadpath)) {
-
-			//echo $uploadpath;
-
-			if(!mkdir($uploadpath)) {
  
 
-
+	function do_upload($files, $filename, $uploadpath = './media/', &$error = '')
+	{
+		//$uploadpath = './media/6';
+		if(!file_exists($uploadpath)) {
+			//echo $uploadpath;
+			if(!mkdir($uploadpath)) {
+ 
 			}
-
 		}
 
 		$config['upload_path'] = $uploadpath; 
@@ -202,10 +189,10 @@ class Beex {
 
 					$donation = $CI->MItems->getDonations($row->piece_id)->row();
 
-					$output .= '<p class="activity">'.$donation->firstname.' '.$donation->lastname.' donated $'.$donation->mc_gross.' to the cause.</p>';
+					$output .= '<p class="activity">'.(($donation->on1) ? "Anonymous" : $donation->firstname.' '.$donation->lastname).' donated $'.$donation->mc_gross.' to the cause.</p>';
 					
-					if($donation->os0) 
-						$output .= '<p class="activity donationnote"><i>"'.$donation->on0.'"</p>';
+					if($donation->on0) 
+						$output .= '<p class="activity donationnote"><i>"'.$donation->on0.'"</i></p>';
 				}
 
 			}
@@ -217,12 +204,12 @@ class Beex {
 
 
 
-	function displayRecentlyDeclared() {
+	function displayRecentlyDeclared($n = 3) {
 		
 		$CI =& get_instance();
 		$CI->load->model('MItems');
 		
-		$result = $CI->MItems->getChallenge('', '', 'challenges.created', 'DESC', 3);
+		$result = $CI->MItems->getChallenge('', '', 'challenges.created', 'DESC', $n);
 		$output = '';
 
 		foreach($result->result() as $row) {
@@ -293,7 +280,7 @@ class Beex {
 
                         <script>
 
-                            jQuery("#donatebuttonbrowse<?php echo $item->id; ?>").colorbox({href:"/pieces/donate.php?challenge_id=<?php echo $item->id; ?>&challenge_name=<?php echo urlencode($item->challenge_title); ?>"});
+                            jQuery("#donatebuttonbrowse<?php echo $item->id; ?>").colorbox({href:"/pieces/donate.php?challenge_id=<?php echo $item->id; ?>&challenge_name=<?php echo urlencode($item->challenge_title); ?>", width:'420', height:'400px'});
 
                         </script>
 
@@ -592,21 +579,18 @@ class Beex {
                         <?php endif; ?>
 
 						<div class="donation">
-
-                            <img class="donatebutton" id="donatebutton<?php echo $item->id; ?>" src="<?php echo base_url(); ?>/beex/images/buttons/donate.gif" style="float:right; margin:20px 10px 10px;" />
+                            
+							<?php echo $this->processProgressBar($table, $item->id); ?>
+							<img class="donatebutton" id="donatebutton<?php echo $item->id; ?>" src="<?php echo base_url(); ?>/beex/images/buttons/donate.gif" style="margin:10px 0px;" />
 
 
 
                             <script>
 
-                           jQuery("#donatebutton<?php echo $item->id; ?>").colorbox({href:"/pieces/donate.php?challenge_id=<?php echo $item->id; ?>&challenge_name=<?php echo urlencode($item->challenge_title); ?>"});
+                           jQuery("#donatebutton<?php echo $item->id; ?>").colorbox({href:"/pieces/donate.php?challenge_id=<?php echo $item->id; ?>&challenge_name=<?php echo urlencode($item->challenge_title); ?>", width:'420', height:'400px'});
 							
 							//jQuery("#donatebutton<?php echo $item->id; ?>").colorbox({href:"http://www.beex.org/index.php/npo/donateTo/<?php echo $item->id; ?>"});
-                            </script>
-                            <div class="fundinfo">
-							<?php echo $this->processProgressBar($table, $item->id); ?>
-                            </div>
-
+                            </script>                            
 						</div>
 
 					</td>

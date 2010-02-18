@@ -74,6 +74,17 @@ class MUser extends Model {
 		}
 	}
 	
+	function validate_fb($uid) {
+		if($result = $this->db->get_where('users', array('fb_user'=>$uid))){
+			if($result->num_rows()) {
+				return $result;
+			}
+			else {
+				return false;	
+			}
+		}		
+	}
+	
 	function login($email, $password, $retval = 'id') {
 		
 		if($result = $this->validate_user($email, $password)) {

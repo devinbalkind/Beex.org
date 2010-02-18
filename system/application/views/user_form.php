@@ -32,6 +32,7 @@ elseif($edit){
 
 $name = 'email';
 $value = ($new) ? set_value($name) : @$item->$name;
+
 $email_cell = ($new) ? generate_input($name, 'input', $edit, $value) : $item->$name;
 
 
@@ -171,8 +172,19 @@ if($edit){
 
 	echo form_open_multipart('user/process/user/'.$edit_id, $attributes);
 }
+if(!@$item->fb_user) :
 ?>
+		<script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php" type="text/javascript"></script>
+		<script type="text/javascript">
+			FB.init("a8656fd483cd0ba9c14474feb455bc98", "/xd_receiver.htm");						
+		</script>
+<?
+	/// In the future, 'a8656fd483cd0ba9c14474feb455bc98' should be replaced with $this->config->item('facebook_api_key'). 
+	/// I have no idea why it's not working
 
+endif;
+
+?>
 
            
           	<h2 class="title">Account Information (all fields required)</h2>
@@ -208,7 +220,21 @@ if($edit){
                     	<td class="label"><label>Last Name:</label></td>
                         <td><?php echo $last_name_cell; ?></td>
                     </tr>
-                    
+
+<?php if(!@$item->fb_user) { ?>
+                    <tr>
+						<td class="label"><label>Enable one-click login with Facebook Connect</label></td>
+						<td>							
+							<fb:login-button onlogin="window.location='<?=current_url()?>index.php/user/login'"></fb:login-button>							
+						</td>
+					</tr>				
+<?php } else { ?>
+
+					<tr>
+						<td class="label"><label>Facebook connect</label></td>
+						<td>Enabled!</td>
+					</tr>
+<?}?>						
                 </table>
            
 
