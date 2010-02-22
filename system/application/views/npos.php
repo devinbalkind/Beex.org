@@ -7,9 +7,9 @@ $this->load->view('framework/header', $header);
 <div id="LeftColumn">
 	<div class="tout" id="NewNPO" style="margin:15px 0;">
     	<?php echo anchor('npo/newNpo', '<img src="/beex/images/buttons/register-npo.gif">'); ?>
-
+		
     </div>
-
+	<p class="bluelink"><?php echo anchor('npo/login/', 'Click here to edit your NPO'); ?></p>
 
 
 

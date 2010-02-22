@@ -446,7 +446,8 @@ form .short {width:20%;}
 /* Helper Styles */
 .clearboth {clear:both;}
 #ui-datepicker-div {display:none;}
-
+.bluelink a {font-size:11px; color:#666;}
+.bluelink a:hover {text-decoration:underline;}
 
 
 /* Footer */
@@ -473,27 +474,30 @@ form .short {width:20%;}
 .see_more_link {font:10px Verdana, Geneva, sans-serif; text-transform:uppercase; margin-top:22px; text-align:center; display:block; width:288px; clear:both;}
 
 /* Challenge Form */
-	#challenge_module {
-		min-height: 800px;
-		width: 100%;
-	}
-	#help {
-		width: 240px;
-		float: right;  margin-right:20px; font-size: 12px; line-height:17px; color:#fff;
-	}
-	#help h3 {background-color:#EFAB32; color:#fff; text-transform:uppercase; font:20px Verdana, Geneva, sans-serif; padding:5px 10px; margin:0px;}
-	#help p {padding:10px 15px; border-bottom:1px dashed #fff; margin:0; background-color:#eee; color:#444;}
-	#help #help_column {padding:10px 15px;  background-color:#999;}
-	#creation_tab {
-		padding:0px 15px 15px; width:440px; float:left; 
-	}
+#challenge_module {
+	min-height: 800px;
+	width: 100%;
+}
+#cluster_area {min-height:1600px; width:100%;}
+#help {
+	width: 240px;
+	float: right;  margin-right:20px; font-size: 12px; margin-top:25px; line-height:17px; color:#fff;
+}
+#help h3 {background-color:#EFAB32; color:#fff; text-transform:uppercase; font:20px Verdana, Geneva, sans-serif; padding:5px 10px; margin:0px;}
+#help p {padding:10px 15px; border-bottom:1px dashed #fff; margin:0; background-color:#eee; color:#444;}
+#help #help_column {padding:10px 15px;  background-color:#999;}
+#creation_tab, #cluster_data_area {
+	padding:0px 15px 15px; width:440px; float:left; margin-top:25px;
+}
 
-#challenge_module #nav_bar {width:80%; margin:0px auto; text-align:center; padding:20px 0px 26px; font-size:14px; color:#000; border-bottom:1px solid #fff;}	
-#challenge_module #nav_bar span {cursor:pointer;}
+#challenge_module #nav_bar, #cluster_area #nav_bar {width:80%; margin:0px auto; text-align:center; padding:20px 0px 26px; font-size:13px; color:#000; border-bottom:1px solid #fff;}	
+#challenge_module #nav_bar span, #cluster_area #nav_bar span {cursor:pointer;}
 
-#creation_tab h2 {background-color:#fff; color:#333; text-transform:none; font-size:18px; margin:0px; padding:0px 0px 10px;}
 
-.input_wrapper {width:100%; padding:5px 0px;}
+#creation_tab h2, #cluster_data_area h2 {background-color:#fff; color:#333; text-transform:none; font-size:14px; margin:0px; padding:0px 0px 10px;}
+#creation_tab h5, #cluster_data_area h5 {margin:0px 0 20px;}
+
+.input_wrapper {width:100%; padding:5px 0px; clear:both;}
 .input_wrapper label {float:left; display:block; width:39%; padding-right:4%; text-align:right; text-transform:capitalize;}
 .input_wrapper input {width:55%;}
 .input_wrapper textarea {width:55%;}
@@ -502,7 +506,7 @@ form .short {width:20%;}
 
 .input_buttons {text-align:center; margin:10px;}
 .input_buttons img {cursor:pointer;}
-.creation_step .errors, .error_field {padding:16px 0px; float:left; color:red; font:bold 11px Verdana, Geneva, sans-serif; text-align:center; clear:both; width:100%; background-color:#fff;}
+.creation_step .errors, .error_field, .cluster_tab .errors {padding:16px 0px; float:left; color:red; font:bold 11px Verdana, Geneva, sans-serif; text-align:center; clear:both; width:100%; background-color:#fff;}
 .error_field {text-align:left; width:auto; padding:10px;}
 
 #upload_area {text-align:center; padding:5px;}
@@ -511,12 +515,8 @@ form .short {width:20%;}
 
 fieldset {border:none; padding:0; margin:0;}
 
-	.creation_step {
-		display: none;
-	}
-	.creation_substep {
-		display: none;
-	}
+.creation_step, .cluster_tab {display: none;}
+.creation_substep {display: none;}
 	
 	.black_overlay{
 		display: none;
@@ -551,3 +551,6 @@ fieldset {border:none; padding:0; margin:0;}
 .preview_box {text-align:center; padding:5px 20px; background-color:#eee;}
 .preview_box h1 {font-size:20px;}
 .preview_box .text {text-align:left; font:10px Verdana, Geneva, sans-serif;}
+
+.nav_button {width:122px; line-height:27px; margin-left:-10px; display:block; float:left; padding-bottom:1px;}
+#nav_bar .arrow {background-image:url("/images/backgrounds/arrow_button.gif"); color:#fff; background-repeat:none;}

@@ -61,7 +61,7 @@ class Npo extends Controller {
 			}
 			else {
 				if($_POST['admin_password'] == 'peterson') {
-					$userdata = array('logged_in'=>true, 'npo_id'=>0, 'admin'=>true);
+					$userdata = array('npo_logged_in'=>true, 'npo_id'=>0, 'npo_admin'=>true);
 					$this->session->set_userdata($userdata);
 					redirect('/npo/viewall', 'refresh');
 				}
@@ -71,7 +71,7 @@ class Npo extends Controller {
 
 			}
 		}
-		$this->load->view('login.php', $data);
+		$this->load->view('npologin.php', $data);
 	}
 	
 	function logout() {
@@ -99,7 +99,7 @@ class Npo extends Controller {
 		$npos = $this->MNpos->getNpos();
 		$output = "";
 		foreach($npos->result() as $row) {
-			$output .= "<tr><td>".anchor('npo/view/'.$row->id, $row->name)."</td><td>".$row->ein."</td><td>".$row->contact_firstname." ".$row->contact_lastname."</td></tr>";
+			$output .= "<tr><td>".anchor('npo/view/'.$row->id, $row->name)."</td><td>".$row->ein."</td><td>".$row->contact_firstname." ".$row->contact_lastname."</td><td>".anchor('npo/edit/'.$row->id,"Edit")."</tr>";
 		}
 		
 		$data['output'] = $output;
@@ -121,14 +121,15 @@ class Npo extends Controller {
 	
 	function edit() {
 		$data = $this->data;
-		if(($npo_id = $this->session->userdata('npo_id')) || $this->session->userdata('admin')) {
+		if(($npo_id = $this->session->userdata('npo_id')) || $this->session->userdata('npo_admin')) {
 			if($this->session->userdata('npo_logged_in')) {
 				
 				if(!$npo_id) {
 					$npo_id = $this->uri->segment(3);	
 				}
 				
-				$data['edit'] = $this->uri->segment(4,0);
+				//$data['edit'] = $this->uri->segment(4,0);
+				$data['edit'] = true;
 				$npo = $this->MNpos->getNpo($npo_id);
 				$data['npo'] = $npo->row();
 				
@@ -137,7 +138,7 @@ class Npo extends Controller {
 					$data['tags'] = $this->processTags($this->MNpos->getTags($npo_id));
 				}
 				
-				$this->load->view('npoview.php', $data);
+				$this->load->view('npoeditform', $data);
 			}
 			else {
 				redirect('/npo/login', 'refresh');
@@ -277,7 +278,7 @@ class Npo extends Controller {
 				$data['tags'] = $this->processTags($this->MNpos->getTags($npo_id));
 			}
 			
-			$this->load->view('npoview.php', $data);
+			$this->load->view('npoeditform.php', $data);
 		}
 	}
 	
@@ -336,7 +337,7 @@ class Npo extends Controller {
 	}
 	
 	function do_upload($files)
-	{
+	{ 
 		$config['upload_path'] = '/beex/media/npos/';
 		$config['allowed_types'] = 'gif|jpg|png';
 		$config['max_size']	= '100';

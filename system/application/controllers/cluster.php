@@ -16,22 +16,13 @@ class Cluster extends Controller {
 
 		parent::Controller();
 
-
-
 		$this->load->model('MItems');
-
 		$this->load->library('beex');
-
 		$this->data['header']['title'] = 'Cluster';
-
 		$this->data['data']['message'] = '';
-
 		$this->data['data']['item'] = '';
-
 		$this->data['data']['username'] = $this->session->userdata('username');
-
 		$this->data['data']['user_id'] = $this->session->userdata('user_id');
-
 		$this->table_name = 'clusters';
 
 	}
@@ -41,19 +32,9 @@ class Cluster extends Controller {
 	function index() {
 
 		$data = $this->data;
-
-
-
 		$browser = $this->MItems->getCluster();
-
-
-
 		$data['browser'] = $browser;
-
 		$data['header']['title'] = "Clusters";
-
-
-
 		$this->load->view('clusters', $data);
 
 	}
@@ -379,7 +360,7 @@ class Cluster extends Controller {
 
 		if(strlen($str) > 120) {
 
-			$this->form_validation->set_message('blurb_check', 'The blurb is longer then 120 characters');
+			$this->form_validation->set_message('blurb_check', 'The blurb is longer than 120 characters');
 
 			return false;
 
@@ -398,44 +379,45 @@ class Cluster extends Controller {
 
 
 	function process() {
-
-		$data = $this->data;
-
-		$id = $this->uri->segment(4,'add');
-
-		$new = ($id == 'add') ? true : false;
-
 		
+		/* Code to ignore the <form> for ajaxy uploading. */
+		$toUnset = array("maxSize", "maxW","fullPath","relPath","colorR","colorG","colorB","maxH","filename","x", "y");
+		foreach($toUnset as $unsetMe) {
+			unset($_POST[$unsetMe]);
+		}
+		$_POST['cluster_image'] = $this->session->userdata('cluster_image');
+		$this->session->unset_userdata('cluster_image');
+		
+				
+		$data = $this->data;
+		$id = $this->uri->segment(4,'add');
+		$new = ($id == 'add') ? true : false;
+	
 		if($user_id = $this->session->userdata('user_id')) {
 			$_POST['user_id'] = $user_id;
 		}
-		elseif(@$_POST['signup_email'] && !@$_POST['admin_email']) {
-			
-			$_POST['user_id'] = $this->MUser->process_new_user($_POST, $error);
-			
+		elseif(@$_POST['signup_email'] && !@$_POST['admin_email']) {			
+			$_POST['user_id'] = $this->MUser->process_new_user($_POST, $error);			
 		}
 		else {
 			$_POST['user_id'] = $this->process_user(@$_POST['admin_email'], @$_POST['password']);
 			unset($_POST['password']);
 		}
 			
-		if(!$_POST['user_id']) {
-			
+		if(!$_POST['user_id']) {			
 			$data['message'] = ($error) ? $error : "You could not be logged in, please try again.";
 			$data['new'] = true;
 		}
 		
 		else {
 		
-			$this->load->library('form_validation');
-				
+			$this->load->library('form_validation');				
 			if(!$this->session->userdata('logged_in') && ($id == 'add')) {
 				$this->form_validation->set_rules('admin_email', 'User Email', 'trim|required');
 				$this->form_validation->set_rules('password', 'User Password', 'trim|required');
 			}
 	
-			//Required Fields
-	
+			//Required Fields	
 			$this->form_validation->set_rules('cluster_title', 'Cluster Title', 'trim|required');
 			$this->form_validation->set_rules('cluster_npo', 'Cluster NPO', 'trim|required');
 			$this->form_validation->set_rules('cluster_goal', 'Cluster Goal', 'trim');
@@ -453,36 +435,25 @@ class Cluster extends Controller {
 			$this->form_validation->set_rules('cluster_ch_proof', 'Cluster Challenge Proof', 'trim');
 			$this->form_validation->set_rules('cluster_ch_location', 'Cluster Challenge Location', 'trim');
 			$this->form_validation->set_rules('cluster_ch_address', 'Cluster Challenge Address', 'trim');
-	
-	
-	
+			
 			if ($this->form_validation->run() == FALSE)
 			{
-				$data['message'] = "Please fill out all the required fields.";
-				
+				$data['message'] = "Please fill out all the required fields.";				
 				if($new) {
 
 					$data['edit'] = false;
-
 					$data['new'] = true;
-
 					$data['data'] = @$data;
-
 					$this->load->view('start_a_cluster', $data);
 
 				}
-				else {
-					
-					$this->editor('', '', $id, 'edit', $data['message']);
-					
+				else {					
+					$this->editor('', '', $id, 'edit', $data['message']);					
 				}
 			}
 			else {
 
 				// User has been logged in, processing continues
-
-
-
 				if($id == 'add') {
 
 					for($i=1; $i<3; $i++) {
@@ -502,123 +473,63 @@ class Cluster extends Controller {
 
 
 				$_POST['cluster_ch_fr_ends'] = ($_POST['cluster_ch_fr_ends']) ? date('Y-m-d', strtotime($_POST['cluster_ch_fr_ends'])) : '';
-
 				$_POST['cluster_ch_completion'] = ($_POST['cluster_ch_completion']) ? date('Y-m-d', strtotime($_POST['cluster_ch_completion'])) : '';
-
 				$_POST['cluster_ch_proofdate'] = ($_POST['cluster_ch_proofdate']) ? date('Y-m-d', strtotime($_POST['cluster_ch_proofdate'])) : '';
-
-
 
 				if($id == 'add')
 					$_POST['created'] = date("Y-m-d H:i:s");
 
-
-
-
-
 				foreach($_POST as $key => $val) {
-
 					if(!$val) {
-
 						unset($_POST[$key]);
-
 					}
-
 				}
 
 				unset($_POST['signup_email'], $_POST['signup_name'], $_POST['signup_pass'], $_POST['signup_passconf']);
 				unset($_POST['x']);
 				unset($_POST['y']);
 
-
-
-
-
 				//Separate Images for later
-
+				/* NOT NEEDED! we use ajax now			
 				if($_FILES['cluster_image']['name']) {
-
 					$_POST['cluster_image'] = $this->beex->do_upload($_FILES, 'cluster_image', './media/clusters/');
-
-				}
-
-
-
-
+				}*/
 
 				if($id == 'add') {
-
 					if($cluster_id = $this->MItems->add('clusters', $_POST)) {
-
-
-
 						$this->MItems->add('admins', array('user_id'=>$this->session->userdata('user_id'), 'cluster_id'=>$cluster_id));
-
 						$data['message'] = $_POST['cluster_title']." has successfully been created.";
-
 						for($i=1; $i<3; $i++) {
-
 							if($email[$i]) {
-
 								$this->add_admin($email[$i], $name[$i], $personal_message, array('id' => $cluster_id, 'name'=>$_POST['cluster_title']));
-
 							}
 						}
-
-						$this->editor('', '', $cluster_id, 'challengers', $data['message']);
-						
+						$this->editor('', '', $cluster_id, 'challengers', $data['message']);						
 					}
-
 					else {
-
 						$data['message'] = "We're sorry, there has been a problem processing your request.";
-
 					}
-
 				}
 
 				else {
-
 					if($this->MItems->update('clusters', $id, $_POST)) {
-
-
-
 						$data['message'] = $_POST['cluster_title']." has successfully been updated. ".anchor('cluster/view/'.$id, 'Back to cluster');
-
-						//redirect('cluster/challengers/'.$id, 'refresh');
-						
-						$this->editor('', '', $id, 'edit', $data['message']);
-						
-
+						//redirect('cluster/challengers/'.$id, 'refresh');					
+						$this->editor('', '', $id, 'edit', $data['message']);						
 					}
-
 					else {
-
 						$data['message'] = "We're sorry, there has been a problem processing your request.";
-
 					}
-					
-					
-
-
-
-
+										
 					$data['data']['message'] = $data['message'];
-
 					$data['data']['item'] = $this->MItems->getCluster($id);
-
 					$data['data']['edit'] = true;
-
 					$data['data']['new'] = 0;
-
 				}
-
 			}
 
 		}
-
-		
-
+	
 	}
 
 
