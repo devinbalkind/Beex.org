@@ -5,6 +5,9 @@
 //$new = true;
 
 $challenge_info = $this->session->userdata('challenge_info');
+$fb_user = $this->session->userdata('fb_user'); // whether or not we show fb connect dialog
+
+
 
 if($message) {
 
@@ -24,11 +27,13 @@ if($new) {
 	$this->session->set_userdata('challenge_info',$challenge_info);
 	$edit = true;
 	$edit_id = '';
-
+	$editing = false;
+	
 }
 
 elseif($edit){
-
+	
+	$editing = true;
 	$new = false;
 	$edit = true;
 	$item = $item->row();
@@ -411,12 +416,19 @@ if($edit){
 <script language="javascript" type="text/javascript" src="<?php echo base_url(); ?>scripts/ajaxupload.js"></script>	
 <script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php" type="text/javascript"></script>
 <script type="text/javascript">
-	FB.init("a8656fd483cd0ba9c14474feb455bc98", "/xd_receiver.htm");
+	FB_RequireFeatures(["XFBML"], function() {
+		FB.init("a8656fd483cd0ba9c14474feb455bc98", "/xd_receiver.htm");
+	});
 </script>
 
 <script type="text/javascript">
+
+	function form_input_is_int(input){
+	  return !isNaN(input)&&parseInt(input)==input;
+	}
+
+
 	$(document).ready(function() {
-		
 		
 		
 		help_column = {
@@ -487,14 +499,21 @@ JS_IMG;
 JAVASCRIPT;
 				
 				echo 'current_tab = \'what_tab\';';	
+				echo '$("#nav_who").removeClass("bold");';
+				echo '$("#nav_who").addClass("arrow");';
+				echo '$("#nav_what").addClass("bold");';
+				
 		}
 		elseif(isset($username) && $username != '') {
 			$challenge_creation_step = 'what';
 			echo 'current_tab = \'what_tab\';';
+			echo '$("#nav_who").removeClass("bold");';
+			echo '$("#nav_who").addClass("arrow");';
+			echo '$("#nav_what").addClass("bold");';
 		}
 		else {
 			$challenge_creation_step = 'who';	
-			echo 'current_tab = \'who_tab\';';
+			echo 'current_tab = \'who_tab\';';			
 		}					
 		
 
@@ -531,7 +550,7 @@ SHOW_HIDE;
 		
 		$(".account_yet").click(function() {
 			$("#user_registered_yet").hide();
-			if($(this).val() == 'Yes!') {
+			if($(this).attr("name") == 'already_have_account') {
 				$("#already_registered").show();
 			}
 			else {
@@ -814,6 +833,7 @@ SHOW_HIDE;
 		tab_list = ["who","what","when_where","why"];
 		
 		
+	
 		$("#nav_what").click(function() {
 			if(current_tab != 'who_tab') {
 				$("#when_where_tab").hide();
@@ -893,6 +913,12 @@ SHOW_HIDE;
 				 success: function(ret){
 					
 					if(ret['success']) { // advance to the next step. 
+						new_challenge_id = ret['challenge_id'];
+					
+						<?php						
+						if(ctype_digit($fb_user)) {
+						?>	
+						
 						/* publish to the news feed */
 						var message = 'Support me in my challenge to raise money for charity!'; 
 						var attachment = { 
@@ -917,7 +943,12 @@ SHOW_HIDE;
 							'href':'http://bit.ly/19DTbF'
 						}]; 
 						FB.Connect.streamPublish(message, attachment, action_links, null, '', publishCallback);		
-						new_challenge_id = ret['challenge_id'];
+						
+						<?
+						} 
+						else { ?>						
+						window.location = '<?php echo base_url(); ?>index.php/challenge/view/' + new_challenge_id;											
+						<? } ?>										
 					}
 					else {
 						$("#login_errors").html(ret['errors']); // change this to a universal error field ..? hmm?
@@ -932,13 +963,27 @@ SHOW_HIDE;
 					
 		});
 		
+		$("#challenge_zip").keyup(function() {
+
+			zip = $(this).val();
+			if(zip.length == 5) {				
+		 		$("select[name=challenge_state]").val(zipToState(zip));
+			}
+
+		});
+		
+		
+		
 		
 	});
 </script>
 	
 <div id="challenge_module">
 	<div id="nav_bar">
-		<span class="nav_button" id="nav_who">Who</span><span class="nav_button" id="nav_what">What</span><span class="nav_button" id="nav_when_where">When/Where</span><span class="nav_button" id="nav_why">Why</span>
+<?php if(!$editing) {?>
+		<span class="nav_button" id="nav_who">Who</span>		
+<?}?>		
+		<span class="nav_button" id="nav_what">What</span><span class="nav_button" id="nav_when_where">When/Where</span><span class="nav_button" id="nav_why">Why</span>
 	</div>
 	<div id="help">
     	<h3>Need Help???</h3>
@@ -1068,6 +1113,10 @@ SHOW_HIDE;
 				<input type="text" name="challenge_city" id="challenge_city">		
 			</div>
 			<div class="input_wrapper">
+				<label>zipcode</label>
+				<input type="text" name="challenge_zip" maxlength="5" id="challenge_zip">			 
+			</div>
+			<div class="input_wrapper">
 				<label>state</label>				
 				<?php 
 				if(isset($challenge_info['challenge_state'])) {
@@ -1079,10 +1128,6 @@ SHOW_HIDE;
 				$state_cell = generate_input('challenge_state', 'dropdown', true, $set_state, get_special_array('states')); 
 				echo $state_cell; 
 				?> 
-			</div>
-			<div class="input_wrapper">
-				<label>zipcode</label>
-				<input type="text" name="challenge_zip" maxlength="5" id="challenge_zip">			 
 			</div>
 			<div class="input_wrapper">
 				<label>can people attend?</label>

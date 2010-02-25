@@ -20,6 +20,12 @@ class Adminajax extends Controller {
 		echo $ret;
 		
 	}
+	
+	function delete($table, $id) {
+		
+		$this->MItems->delete($table, $id);
+		echo true;
+	}
 		
 	
 }

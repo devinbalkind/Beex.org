@@ -172,11 +172,14 @@ if($edit){
 
 	echo form_open_multipart('user/process/user/'.$edit_id, $attributes);
 }
-if(!@$item->fb_user) :
+if(true) :
 ?>
 		<script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php" type="text/javascript"></script>
 		<script type="text/javascript">
-			FB.init("a8656fd483cd0ba9c14474feb455bc98", "/xd_receiver.htm");						
+			FB_RequireFeatures(["XFBML"], function() {
+				FB.init("a8656fd483cd0ba9c14474feb455bc98", "/xd_receiver.htm");
+			});
+			
 		</script>
 <?
 	/// In the future, 'a8656fd483cd0ba9c14474feb455bc98' should be replaced with $this->config->item('facebook_api_key'). 
@@ -225,7 +228,7 @@ endif;
                     <tr>
 						<td class="label"><label>Enable one-click login with Facebook Connect</label></td>
 						<td>							
-							<fb:login-button onlogin="window.location='<?=current_url()?>index.php/user/login'"></fb:login-button>							
+							<fb:login-button onlogin="window.location='<?php echo base_url(); ?>index.php/user/login'"></fb:login-button>							
 						</td>
 					</tr>				
 <?php } else { ?>

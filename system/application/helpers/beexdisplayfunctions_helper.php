@@ -22,4 +22,23 @@ function render_login($username = '', $small = false) {
     <?php
 		endif;	
 }
+
+
+function sizeTheTitle($title, $size = 18, $maxwidth = 10) {
+	
+	$words = explode(' ', $title);
+	
+	$width = $maxwidth;
+	
+	foreach($words as $word) {
+		if(strlen($word) > $maxwidth) {
+			$width = strlen($word);
+		}
+	}
+
+	return round($size * ($maxwidth/$width));
+	
+}
+
+
 ?>

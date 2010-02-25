@@ -30,4 +30,54 @@ class Admin extends Controller {
 			$this->load->view('admin/not_authorized', $data);
 		}
 	}
+	
+	function challenges() {
+		
+		$data = $this->data;
+		
+		if($this->session->userdata('super_user')) {
+			$data['list'] = $this->MAdmin->getList('challenges');
+			$data['table'] = 'challenges';
+			$this->load->view('admin/view_challenges', $data);
+		}
+		else {
+			
+			$this->load->view('admin/not_authorized', $data);
+		}
+		
+	}
+	
+	function clusters() {
+		
+		$data = $this->data;
+		
+		if($this->session->userdata('super_user')) {
+			
+			$data['list'] = $this->MAdmin->getList('clusters');
+			$data['table'] = 'clusters';
+			$this->load->view('admin/view_list', $data);
+		}
+		else {
+			
+			$this->load->view('admin/not_authorized', $data);
+		}
+		
+	}
+	
+	function users() {
+		
+		$data = $this->data;
+		
+		if($this->session->userdata('super_user')) {
+			
+			$data['list'] = $this->MAdmin->getList('users');
+			$data['table'] = 'users';
+			$this->load->view('admin/view_list', $data);
+		}
+		else {
+			
+			$this->load->view('admin/not_authorized', $data);
+		}
+		
+	}
 }

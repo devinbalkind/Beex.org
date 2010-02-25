@@ -4,7 +4,7 @@ $this->load->view('framework/header', $header);
 
 ?>
 
-<h2>Challenges</h2>
+<h2><?php echo $table; ?></h2>
 
 <?php echo $this->MAdmin->generateTable($table, $list); ?>
 
@@ -30,6 +30,25 @@ jQuery(document).ready(function(){
 			});
 			
 	
+	});
+	
+	jQuery(".deletebutton").click(function() {
+		
+		var id = jQuery(this).attr('id').substr(6);
+		var table = '<?php echo $table; ?>';
+		
+		jQuery.ajax({
+			
+			url: base_url + "adminajax/delete/" + table + '/' + id,
+			success: function(html) {
+				
+				jQuery(this).parents('table').remove();
+					
+				
+			}
+			
+		});
+		
 	});
 
 });

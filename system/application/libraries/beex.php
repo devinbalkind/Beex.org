@@ -556,46 +556,49 @@ class Beex {
 			$CI =& get_instance(); 
 			$pronoun = $CI->MItems->hasTeammates($item->id);
 			
+			$decsize = strlen($item->challenge_declaration);
+			$nposize = strlen($item->name);
+			
+			$npostandard = 24;
+			$decstandard = 50;
+			
+			$hlbstandard = 30;
+			$hlstandard = 24;
+			
+			$sizecoef = .6;
+			
+			$coef = ( ($npostandard+$decstandard) / ( (($npostandard + $decstandard) > $sizecoef*($nposize + $decsize)) ? ($npostandard + $decstandard) : $sizecoef*($nposize + $decsize)));
+			
+			$hlb = round($hlbstandard * $coef);
+			$hl = round($hlstandard * $coef);
+			
+			
 		?>
-
+<style>
+.declaration .hl {font-size:<?php echo $hl; ?>px;}
+.declaration .hlb {font-size:<?php echo $hlb; ?>px;}
+</style>
 			<table cellpadding="0" cellspacing="0" border="0">
-
 				<tr>
-
 					<td class="media">
-
 						<?php if($video = $item->challenge_video) : ?>
-
                         <div class="video" style="width:400px;">
-
                             <?php echo process_video_link($video); ?>
-
                         </div>
-
                         <?php elseif($image = $item->challenge_image) : ?>
-
                             <img id="main_image" src="<?php echo base_url(); ?>/media/challenges/<?php echo $image; ?>" />
-
                         <?php endif; ?>
-
-						<div class="donation">
-                            
+						<div class="donation">                          
 							<?php echo $this->processProgressBar($table, $item->id); ?>
 							<img class="donatebutton" id="donatebutton<?php echo $item->id; ?>" src="<?php echo base_url(); ?>/beex/images/buttons/donate.gif" style="margin:10px 0px;" />
 
-
-
                             <script>
-
                            jQuery("#donatebutton<?php echo $item->id; ?>").colorbox({href:"/pieces/donate.php?challenge_id=<?php echo $item->id; ?>&challenge_name=<?php echo urlencode($item->challenge_title); ?>", width:'420', height:'400px'});
 							
 							//jQuery("#donatebutton<?php echo $item->id; ?>").colorbox({href:"http://www.beex.org/index.php/npo/donateTo/<?php echo $item->id; ?>"});
                             </script>                            
 						</div>
-
 					</td>
-
-
 
 					<td class="declaration">
 						<p><span class='hl'><?php echo $pronoun; ?></span> will <span class='hl'><?php echo anchor('challenge/view/'.$item->id, $item->challenge_declaration); ?></span> if<br /><span class='hlb'>$<?php echo $item->challenge_goal; ?></span>
