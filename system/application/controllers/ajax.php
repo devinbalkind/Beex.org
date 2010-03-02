@@ -165,7 +165,7 @@ class Ajax extends Controller {
 		$foldername = is_null($forCluster) ? "challenges" : "clusters";
 		
 		$filesize_image = $_FILES[$filename]['size'];
-		if($filesize_image > 0){			
+		if((strpos($_FILES[$filename]['type'], 'image') !== FALSE) && $filesize_image > 0) {
 			$upload_result = $this->beex->do_upload($_FILES, 'filename', './media/'. $foldername .'/');
 			$upload_filepath = base_url() . 'media/'. $foldername .'/' . $upload_result;
 			$upload_metadata = $this->upload->data();
@@ -187,6 +187,7 @@ IMG;
 		}
 		else {
 			$imgUploaded = false;
+			echo "There was a problem with your upload - try again!";
 		}
 
 

@@ -565,7 +565,7 @@ class Beex {
 			$hlbstandard = 30;
 			$hlstandard = 24;
 			
-			$sizecoef = .6;
+			$sizecoef = .7;
 			
 			$coef = ( ($npostandard+$decstandard) / ( (($npostandard + $decstandard) > $sizecoef*($nposize + $decsize)) ? ($npostandard + $decstandard) : $sizecoef*($nposize + $decsize)));
 			

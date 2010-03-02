@@ -33,13 +33,13 @@ function process_video_link($link, $width=400, $height=200) {
 		
 		$link = <<<YOUTUBE
 
-			<object width="425" height="355">
+			<object width="400" height="250">
 			  <param name="movie" value="http://www.youtube.com/v/{$vid_code}?rel=1&color1=0x2b405b&
 			    color2=0x6b8ab6&border=1&fs=1"></param>
 			  <param name="allowFullScreen" value="true"></param>
 			  <embed src="http://www.youtube.com/v/{$vid_code}?rel=1&color1=0x2b405b&color2=0x6b8ab6&border=1&fs=1"
 			    type="application/x-shockwave-flash"
-			    width="425" height="355" 
+			    width="400" height="250" 
 			    allowfullscreen="true"></embed>
 			</object>
 		
@@ -60,15 +60,22 @@ YOUTUBE;
 		$link = html_entity_decode($oembed->html);
 
 
+		$link = preg_replace('/(width)=("[^"]*")/i', 'width="400"', $link);
+		$link = preg_replace('/(height)=("[^"]*")/i', 'height="250"', $link);
+		$link = substr($link, 0, strpos($link, '</param>')).'<param name="wmode" value="transparent"></param>'.substr($link, strpos($link, "</param>"));
+		$link = substr($link, 0, strpos($link, '<embed ')+7).'wmode="transparent" '.substr($link, strpos($link, "<embed ")+7);		
+
 			
 	}
+	/* the ELSE condition is accessed when a user likely pastes in some EMBED code
+	
 	else {
 		//$link = str_replace(array('width="425"', 'height="344"'), array('width="400"', 'height="250"'), $link);
 		$link = preg_replace('/(width)=("[^"]*")/i', 'width="400"', $link);
 		$link = preg_replace('/(height)=("[^"]*")/i', 'height="250"', $link);
 		$link = substr($link, 0, strpos($link, '</param>')).'<param name="wmode" value="transparent"></param>'.substr($link, strpos($link, "</param>"));
 		$link = substr($link, 0, strpos($link, '<embed ')+7).'wmode="transparent" '.substr($link, strpos($link, "<embed ")+7);		
-	}
+	} */
 
 
 	return $link;
@@ -120,8 +127,15 @@ function generate_input($name, $type, $edit, $value, $array = '', $class = '') {
 	if($type == 'hidden') {
 
 		$data['value'] = $value;
+		
+		$hidden_a = array( 
+				'name' => $name,
+				'value' => $value,
+				'id' => $name,
+				'type' => 'hidden'
+			);
 
-		$cell = ($edit) ? form_hidden($name, $value) : $value;
+		$cell = ($edit) ? form_input($hidden_a) : $value;
 
 	}
 

@@ -108,7 +108,7 @@ $autoload['language'] = array();
 |
 */
 
-$autoload['model'] = array('mitems', 'MUser', 'madmins');
+$autoload['model'] = array('mitems', 'MUser', 'madmins', 'mstat');
 
 
 

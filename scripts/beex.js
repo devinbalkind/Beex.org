@@ -1,24 +1,22 @@
 // JavaScript Document
 
-var base_url = "http://localhost:8888/beex/index.php/";
+//var base_url = "http://localhost:8888/beex/index.php/";
+var base_url = "http://www.beex.org/index.php/";
 
 jQuery(document).ready(function(){
+	
+	$(".datepicker").datepicker({minDate:0});
 	
 	jQuery("#new_note").click(function() {	
 		jQuery("#edit_note_form").show();
 	});
 	
-	
 	// Featured browser buttons 
 	/*
-	jQuery(".featured_buttons .button").click(function() {
-		
+	jQuery(".featured_buttons .button").click(function() {	
 		jQuery(".featured_buttons div").removeClass('on');
-		
 		var id = jQuery(this).attr('id').substr(6);
-		
 		jQuery(".featured_buttons #button" + id).addClass('on');
-	
 	});
 	*/
 	
@@ -36,20 +34,13 @@ jQuery(document).ready(function(){
 			jQuery("#Featured" + id).fadeTo('normal', 1);
 		});
 		
-		
-		
-		
-		
-		
-		
 	});
 	
 	/* Proof and Note Javascript */
 	
 	jQuery(".edit_proof_button").click(function() {
-		
+	
 		var id = jQuery(this).attr('id').substr(10);
-		
 		jQuery("#edit_proof_form"+id).show();
 	
 	});
@@ -85,7 +76,7 @@ jQuery(document).ready(function(){
 		
 	});
 	
-	jQuery(".delete_note_button").click(function() {
+	jQuery(".delete_reply_button").click(function() {
 		
 		var answer = confirm("Are you sure you want to delete this reply?");
 		if (answer) {

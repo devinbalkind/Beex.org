@@ -30,6 +30,11 @@ class MAdmin extends Model{
 			$output .= "<tr><th>User Email</th><th>Edit</th><th>Delete</th></tr>";
 			
 		}
+		elseif($table == "donors") {
+			
+			$output .= "<tr><th>".anchor('admin/donations/lastname/asc', 'Donor Name')."</th><th>".anchor('admin/donations/buyer_email/asc', 'Donor Email')."</th><th>".anchor('admin/donations/state/asc', 'State')."</th><th>".anchor('admin/donations/city/asc', 'City')."</th><th>".anchor('admin/donations/itemname/asc', 'Challenge')."</th><th>".anchor('admin/donations/receiver_email/asc', 'Benefitting Account')."</th><th>".anchor('admin/donations/mc_gross/desc', 'Amount')."</th></tr>";
+			
+		}
 		
 		foreach($results->result() as $row) {
 			
@@ -63,6 +68,20 @@ class MAdmin extends Model{
 				</tr>";
 				
 			}
+			elseif($table == 'donors') {
+				
+				$output .= "
+				<tr>
+				 <td>".$row->firstname." ".$row->lastname."</td>
+				 <td>".$row->buyer_email."</td>
+				 <td>".$row->state."</td>
+				 <td>".$row->city."</td>
+				 <td>".$row->itemname."</td>
+				 <td>".$row->receiver_email."</td>
+				 <td>".$row->mc_gross."</td>
+			    </tr>";
+				
+			}
 		}
 		
 		$output .= "</table>";
@@ -70,9 +89,9 @@ class MAdmin extends Model{
 		return $output;
 	}
 	
-	function getList($table) {
+	function getList($table, $sort = '', $dir = '') {
 		
-		return $this->MItems->get($table);
+		return $this->MItems->get($table, '', '', $sort, $dir);
 		
 	}
 	

@@ -4,6 +4,7 @@
 
 //$new = true;
 
+$attributes = array('id' => 'clusterform', 'class'=>'itemform');
 
 
 if($new) {
@@ -433,7 +434,7 @@ $ch_video_cell = generate_input($name, 'text', $edit, $value);
     </div>
 
 
-
+ 
     <div class="module">
 
         <h2 class="title titlebg"><?php echo ($new) ? "Start A" : "Edit"; ?> Cluster</h2>
@@ -464,9 +465,11 @@ if($edit){
 
 
 
-	echo form_open_multipart('cluster/process/cluster/'.$edit_id, $attributes);
+	
 
 }
+
+echo form_open_multipart('cluster/process/cluster/'.$edit_id, $attributes);
 
 ?>
 
@@ -503,6 +506,61 @@ if (!Array.prototype.indexOf) // IE6 compatibility for Array.prototype.indexOf
 }
 
 $(document).ready(function() {
+
+
+	help_column = {
+		"who_tab": "Start by logging in or registering a new account.  If you use Facebook, we suggest logging in through Facebook Connect because you can automatically update your Facebook friends from this website.",			
+		"admin_invite_tab": "Anyone can be an administrator. Administrators will be able to edit the cluster. To add an administrator, just type his or her email into the box. You can add as many admins as you like.",
+		"what_tab": {
+			"cluster_title":"Give your cluster a name. Make sure its something the participants will recognize",
+			"cluster_goal": "Clusters do not require a fundraising goal but including one might be a good way to motivate everyone.",
+			"cluster_blurb":"Short and sweet, what's this cluster all about.",
+			"cluster_description":"Here's your chance to let it all out. Make sure you provide enough information about your cluster so that all the donors know what's going on. The more clear you are about what you are doing, the more successful the cluster will be.",
+		},			
+				
+		/* 		accurate until here...				*/
+			
+		"media_tab": {
+			"cluster_video":"This is the video everyone will see",
+		},
+		"challenge_control_tab": {
+			"cluster_ch_title": "You already filled out your cluster title but challenges have titles too. If you'd like to control what every challenge is called then type it here. If not then just leave it blank.",
+			"cluster_ch_declaration":"This is the action all the cluster participants are going to perform to raise money. As a cluster administrator, your most important decision is whether to",
+			"cluster_ch_goal":"All challenges must have a goal. It's your decision whether that goal is set by you or the challengers. If your fundraiser has a minimum requirement to participate then it may be wise to set that as the goal.",
+//			"cluster_ch_fr_ends":
+//			"cluster_ch_completion":
+//			"cluster_ch_proofdate":
+			"cluster_ch_location":"This is the location where the challenges will be performed. If your cluster is an event then it may be wise to fill these fields out for your challengers.",
+//			"cluster_ch_address":
+//			"cluster_ch_city":
+//			"cluster_ch_state":
+//			"cluster_ch_zip":
+//			"cluster_ch_attend":
+			"cluster_ch_blurb": "The tagline for all the challenges. Make sure it is short, sweet, and interesting. Of course, you can always leave it blank and let the challengers decide.",
+			"cluster_ch_description":"Your opportunity to say everything that needs to be said. The more detailed you can be the better. Like everything else on this form, you can always leave it to the participant to fill out.",
+//			"cluster_ch_video":
+		}
+	}
+	
+	function buzzy_the_paper_clip() {
+		// Adjusts help column text as appropriate
+		tab_info_type = typeof help_column[$(this).parent().parent()[0].id];
+
+		switch(tab_info_type) {
+			case 'object':
+				$("#help_column").html(help_column[$(this).parent().parent()[0].id][$(this).attr("name")]);
+				break;
+			case 'string':
+				$("#help_column").
+				$("#help_column").html(help_column[$(this).parent().parent()[0].id]);
+				break;				
+		}	
+	}
+	
+	$(".cluster_tab input, textarea").focus(buzzy_the_paper_clip);
+
+
+
 	
 
 	$("#clusterform").keypress(function(e) { 
@@ -552,7 +610,9 @@ JAVASCRIPT;
 	}
 ?>
 
-
+	if(current_tab == 'admin_invite_tab') {
+		$("#nav_who").addClass("arrow");		
+	}
 	nextTab(current_tab);
 		
 	function nextTab(param) {
@@ -568,7 +628,11 @@ JAVASCRIPT;
 			$("#" + tab_list[tab]).hide();
 		}
 		$("#" + toTab).show();
-		current_tab = toTab;		
+		current_tab = toTab;	
+		for(tab in tab_list) {
+			$("#nav_" + tab_list[tab].substr(0, tab_list[tab].length-4)).removeClass("bold");
+		}		
+		$("#nav_" + current_tab.substr(0, current_tab.length-4)).addClass("bold");					
 	}
 	function prevTab() {
 		next_index = tab_list.indexOf(current_tab)-1;	
@@ -578,6 +642,10 @@ JAVASCRIPT;
 		}
 		$("#" + toTab).show();
 		current_tab = toTab;		
+		for(tab in tab_list) {
+			$("#nav_" + tab_list[tab].substr(0, tab_list[tab].length-4)).removeClass("bold");
+		}		
+		$("#nav_" + current_tab.substr(0, current_tab.length-4)).addClass("bold");				
 	}
 	
 	function newAdminCell() {
@@ -644,7 +712,6 @@ JAVASCRIPT;
 					}
 				 }
 			});
-			// do the ajax reg
 		}
 		else {
 			jQuery.ajax({
@@ -661,11 +728,7 @@ JAVASCRIPT;
 					}
 				 }
 			});
-		}
-		
-	
-
-		
+		}		
 	});
 	
 	$("#what_tab_next_btn").unbind();
@@ -676,10 +739,22 @@ JAVASCRIPT;
 			return false;
 		}
 		else {
+			$("#nav_what").addClass("arrow");
 			nextTab('media_tab');
 		}
 	});
 	
+	$("#admin_invite_tab_next_btn").unbind();
+	$("#admin_invite_tab_next_btn").click(function() {
+		$("#nav_admin_invite").addClass("arrow");
+		nextTab('what_tab');		
+	});
+	
+	$("#media_tab_next_btn").unbind();
+	$("#media_tab_next_btn").click(function() {
+		$("#nav_media").addClass("arrow");
+		nextTab('challenge_control_tab');
+	})
 	
 	$("#already_have_account").click(function() {
 		$("#existing_account_div").show();
@@ -692,6 +767,13 @@ JAVASCRIPT;
 		$("#who_tab_next_btn").show();
 	});
 	
+	
+	$(".nav_button").click(function() {		
+		clicked_id = $(this).attr("id");
+		to_tab = clicked_id.substr(4) + '_tab';
+ 		nextTab(to_tab);		
+	});
+	
 
 	
 });
@@ -699,7 +781,11 @@ JAVASCRIPT;
 
 <div id="cluster_area"> <!-- enclosure .. -->
 	<div id="nav_bar">
-		<span class="nav_button" id="nav_who">Who</span><span class="nav_button" id="nav_what">Administratiors</span><span class="nav_button" id="nav_what">What</span><span class="nav_button" id="nav_media">Media</span><span class="nav_button" id="nav_challenge">Challenges</span>
+		<span class="nav_button" id="nav_who">Who</span>
+		<span class="nav_button" id="nav_admin_invite">Administrators</span>
+		<span class="nav_button" id="nav_what">What</span>
+		<span class="nav_button" id="nav_media">Media</span>
+		<span class="nav_button" id="nav_challenge_control">Challenges</span>
 	</div>
 	<div id="help">
     	<h3>Need Help???</h3>
@@ -720,7 +806,7 @@ JAVASCRIPT;
 		                </div>
 						<h2>Or, login/register through Facebook connect!</h2>
 						<div class="input_buttons" style="text-align:left; margin:5px 0px;">					
-							<fb:login-button onlogin="window.location='<?=base_url()?>index.php/user/login'"></fb:login-button>
+							<fb:login-button onlogin="window.location='<?=base_url()?>index.php/user/login'">Login with your Facebook Username</fb:login-button>
 						</div>
 					</div>		
 					<div id="existing_account_div" style="display:none">

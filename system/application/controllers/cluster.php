@@ -94,7 +94,7 @@ class Cluster extends Controller {
 
 		$data = $this->data;
 
-
+		$this->mstat->addStat();
 
 		$id = $this->uri->segment(3,0);
 
@@ -360,7 +360,7 @@ class Cluster extends Controller {
 
 		if(strlen($str) > 120) {
 
-			$this->form_validation->set_message('blurb_check', 'The blurb is longer than 120 characters');
+			$this->form_validation->set_message('blurb_check', 'The blurb is longer then 120 characters');
 
 			return false;
 

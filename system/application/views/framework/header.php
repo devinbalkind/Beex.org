@@ -1,3 +1,14 @@
+<?php
+
+if(ctype_digit($this->session->userdata("fb_user"))) {
+	$fb_user = $this->session->userdata("fb_user");
+}
+else {
+	$fb_user = false;
+}
+
+?>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -43,18 +54,6 @@
     </script>
 <![endif]-->
 
-<script>
-
-$(document).ready(function(){
-
-    $(".datepicker").datepicker();
-
-  });
-
-
-
-</script>
-
 </head>
 
 
@@ -71,30 +70,33 @@ $(document).ready(function(){
 
   	 <?php
 
-	 	if($user_id = $this->session->userdata('user_id')) {
-			?>
+	 	if($user_id = $this->session->userdata('user_id')) :
+	
+	?>
 
 			<script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php" type="text/javascript"></script>
-
 
 			<script type="text/javascript">
 			       FB.init("a8656fd483cd0ba9c14474feb455bc98", "/xd_receiver.htm");
 			</script>
-			<a href="#" onclick="FB.Connect.logout(function() {
-			window.location='<?=base_url()?>index.php/user/logout' }); return
-			false;" >Logout</a>
-
-			<?
-			                       // "a8656f..." should be replaced with
-			$this->config->item('facebook_api_key');
+			
+			<?php if($fb_user) : ?>
+			
+				<a href="#" onclick="FB.Connect.logout(function() {window.location='<?=base_url()?>index.php/user/logout' }); return false;" >Logout</a>
+			
+			<?php else : ?>
+				<a href="<?=base_url()?>index.php/user/logout">Logout</a>
+			
+			<?php endif; ?>
+			
+			<?php
+            // "a8656f..." should be replaced with $this->config->item('facebook_api_key');
             echo ' &bull; '.anchor('user/view/'.$user_id, 'My Profile');
-        }
-
-		else {
+        else :
 
 			echo anchor('user/newuser', 'Register').' | '.anchor('user/login', 'Login');
 
-		}
+		endif; 
 
      ?>
 

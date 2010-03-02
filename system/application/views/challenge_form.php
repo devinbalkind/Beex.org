@@ -1,13 +1,19 @@
 <?php
 
 
-
 //$new = true;
 
 $challenge_info = $this->session->userdata('challenge_info');
 $fb_user = $this->session->userdata('fb_user'); // whether or not we show fb connect dialog
 
 
+if(isset($item->cluster_npo)) {
+	$joina = true;	
+	$cluster_code = $item->theid * 3459;
+}
+else {
+	$joina = false;
+}
 
 if($message) {
 
@@ -416,10 +422,11 @@ if($edit){
 <script language="javascript" type="text/javascript" src="<?php echo base_url(); ?>scripts/ajaxupload.js"></script>	
 <script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php" type="text/javascript"></script>
 <script type="text/javascript">
-	FB_RequireFeatures(["XFBML"], function() {
-		FB.init("a8656fd483cd0ba9c14474feb455bc98", "/xd_receiver.htm");
-	});
+    FB_RequireFeatures(["XFBML"], function() {
+        FB.init("a8656fd483cd0ba9c14474feb455bc98", "/xd_receiver.htm");
+    });
 </script>
+
 
 <script type="text/javascript">
 
@@ -434,26 +441,29 @@ if($edit){
 		help_column = {
 			"who_tab": "Start by logging in or registering a new account.  If you use Facebook, we suggest logging in through Facebook Connect because you can automatically update your Facebook friends from this website.",			
 			"what_tab": {
-				"cluster_id":"Is your challenge part of a greater cluster? If you don't know what this is, then don't worry about it!",
+				"cluster_id":"Is your challenge part of a greater cluster? If you don't know what this is, then don't worry about it.",
 				"challenge_title": "What do you want your challenge to be called? Creativity is an asset but so is clarity.  Puns are popular but we try not to endorse them.",
-				"challenge_declaration":"What are you willing to do?  BEEx automatically adds the 'I will' ('We will' if you have a partner) so just type the action you're performing. For instance, if you type &quot;Jump the Grand Canyon&quot;, your challenge will read &quot;I will Jump the Grand Canyon&quot;. Check out our blog post &quot;What is a Challenge&quot; (http://blog.beex.org/?p=374) if you want more advice.",
+				"challenge_declaration":"What are you willing to do? BEEx automatically adds the 'I will' ('We will' if you have a partner) so just type the action you're performing.  You're declaration is automatically generated at the bottom of this page.  For some advice about creating a compelling declaration, check out our <a href=\"http://blog.beex.org/?p=374\" target=\"_blank\">blog post</a>.",								
 				"proof_description":"Use this box to describe how you're going to prove that you completed your challenge.  For example: I'm going to have pictures taken crossing the finish line or I'm filming my haircut. This proof will be prominently displayed on your challenge page once your challenge is over.  Make it great so your donors love you.",
-				"challenge_goal":"How much money are you trying to raise?  This is a big question.  Our blog post &quot;Challenge Creation&quot; (http://blog.beex.org/?p=392) might give you some helpful tips for how to chose the best amount.",
-				"challenge_npo": "If you don't see the nonprofit you're looking for email Matt[at]beex.org and we'll register them ASAP and let you know when they've signed up.",
+				"challenge_goal":"How much money are you trying to raise? Our blog post <a href=\"http://blog.beex.org/?p=392\" target=\"_blank\">\"Challenge Creation\"</a> might give you some helpful tips for how to chose the best amount.",
+				"challenge_npo": "If you don't see the nonprofit you're looking for email matt@beex.org and we'll register them ASAP and let you know when they've signed up.",				
 				"partner_bool": "Partner - Are you partnering with someone to complete this challenge?  If so, fill in their info and we'll make sure they're signed up and ready to fundraise with you."
 			},				
 			"when_where_tab": {
 				"challenge_location":"Where are you going to perform your challenge?  If it's somewhere virtual, enter it's URL.",
 				"challenge_attend":"Will you be performing your challenge in front of an audience? Can anyone come and watch?",				
 				"fundraising_completed_date":"What is the last day you'll be accepting funds?  If you're participating in an organized event, like a marathon, make sure you don't miss the fundraising deadline.",
-				"proof_posted_date":"When are you going to post your proof onto BEEx? Yes...we expect you to actually prove you completed your challenge and so do your donors."
+				"proof_posted_date":"When are you going to post your proof onto BEEx? Yes...we expect you to actually prove you completed your challenge and so do your donors.",
+				"challenge_completion":"What date will you perform this challenge?",
+				"challenge_fr_completed":"What date must fundraising end?",
+				"challenge_proof_upload":"What date will you post proof to BEEx that you've completed your challenge?  This proof will be automatically emailed to donors.",
 			},
 			"why_tab": {
 				"challenge_blurb":"Think of this as the tagline for your challenge. Make it short, sweet and interesting.",
 				"challenge_video":"We always recommend using video. For example:<br />http://www.youtube.com/watch?v=ZnehCBoYLbc<br />http://vimeo.com/2950999",
 				"challenge_description":"This is your opportunity to be a little more wordy. Put in all the necessary details that haven't been addressed.",
-				"challenge_whydo":"Why do you want to perform this challenge - Everyone is probably wondering why you're doing this...",
-				"challenge_whycare":"Why do you care about this nonprofit - Why is this organization great?  Why should your donors care about them?"
+				"challenge_whydo":"Why do you care about this nonprofit - Why is this organization great?  Why should your donors care about them?",
+				"challenge_whycare":"Why do you want to perform this challenge - Everyone is probably wondering why you're doing this..."
 			}
 		}
 		
@@ -470,7 +480,7 @@ if($edit){
 			}
 
 		}
-		$("#creation_tab input, textarea").focus(buzzy_the_paper_clip);
+		$("#creation_tab input, textarea, select").focus(buzzy_the_paper_clip);
 		
 
 		
@@ -542,9 +552,11 @@ SHOW_HIDE;
 		if($("#challenge_goal").val().length > 0) {
 			$("#dyn_how_much_raised").html($("#challenge_goal").val());					
 		}
-		
-		if($("#challenge_npo option:selected").val().length > 0) {
-			$("#dyn_which_npo").html($("#challenge_npo option:selected").text());			
+
+		if(typeof $("#challenge_npo option:selected").val() != 'undefined') { //prepopulated and undefined during joina
+			if($("#challenge_npo option:selected").val().length > 0) {
+				$("#dyn_which_npo").html($("#challenge_npo option:selected").text());			
+			}			
 		}
 		
 		
@@ -634,7 +646,7 @@ SHOW_HIDE;
 			}
 			else {
 				$("#partner_field").hide();
-				$("preview_pronoun").html("I");
+				$("#preview_pronoun").html("I");
 			}
 		});
 		
@@ -658,10 +670,67 @@ SHOW_HIDE;
 			$("#dyn_which_npo").html($("#challenge_npo option:selected").text());
 		});
 		
+<?php
+
+
+		if($joina) {
+			$npo_name = $this->beex->name_that_npo($cluster->cluster_npo); 			
+?>
+
+		$("#preview_pronoun").html("We");
+		$("#dyn_which_npo").html('<?php echo $npo_name; ?>');
+
+
+		jQuery.ajax({
+			 type: "POST",
+			 dataType: "json",
+			 url: "<?php echo base_url(); ?>index.php/ajax/cluster_validate",
+			 data: "cluster_code=" + <?php echo $cluster_code; ?>,	
+			 success: function(ret){
+				for(key in ret) {
+					if($("#challenge_" + key).length > 0) {
+						if(ret[key] != null && ret[key].length > 0) {
+							$("#challenge_" + key).val(ret[key]);
+							$("#challenge_" + key).attr("readonly", "true");
+							$("#challenge_" + key).addClass("disabled");	
+							if(key == 'zip') {
+								$("select[name=challenge_state]").val(zipToState(ret[key]));
+							}
+							if(key == 'blurb') {
+								solidify('blurb');
+							}
+						}
+					}
+				}				
+				$("#dyn_how_much_raised").html(ret['goal']);
+				$("#dyn_what_will_do").html(ret['declaration']);
+			}
+	
+		});									
+
+
+<?php			
+		}
+?>
+
+
+		function solidify(field) {
+			state_parent = $("#challenge_" + field).parent();
+			tempVal = $("#challenge_" + field).val();
+			$("#challenge_" + field).remove();
+			solid_state = document.createElement('input');
+			solid_state.id = "challenge_"  + field;
+			solid_state.name = "challenge_" + field;
+			state_parent.append(solid_state);
+			$("#challenge_" + field).attr("readonly", "true");
+			$("#challenge_" + field).addClass("disabled");	
+			$("#challenge_" + field).val(tempVal);										
+		}
+		
 		$("#cluster_id").blur(function() {
 			cluster_code = $(this).val();
 			
-			if(cluster_code) {
+			if(cluster_code.length>0) {
 				jQuery.ajax({
 					 type: "POST",
 					 dataType: "json",
@@ -669,26 +738,15 @@ SHOW_HIDE;
 					 data: "cluster_code=" + cluster_code,
 				
 					 success: function(ret){
+						
+						
 						if(ret == 'false') {
 							$("#error_field").html("Not a valid cluster code!");
 						}
 						else {
 							$("#error_field").html("");
 							$("#cluster_id").parent().html("Cluster Code: Accepted!");
-
-
-							function solidify(field) {
-								state_parent = $("#challenge_" + field).parent();
-								$("#challenge_" + field).remove();
-								solid_state = document.createElement('input');
-								solid_state.id = "challenge_"  + field;
-								solid_state.name = "challenge_" + field;
-								state_parent.append(solid_state);
-								$("#challenge_" + field).attr("readonly", "true");
-								$("#challenge_" + field).addClass("disabled");	
-								$("#challenge_" + field).val(ret[key]);										
-							}
-						
+			
 							for(key in ret) {
 								if($("#challenge_" + key).length > 0) {
 									if(ret[key] != null && ret[key].length > 0) {
@@ -717,15 +775,35 @@ SHOW_HIDE;
 					 }
 				});									
 			}
-
+			else if(cluster_code.length == 0) {
+				$("#error_field").html("");				
+			}
 
 		});
+		
+		$("textarea[maxlength]").keypress(function(event){
+			var key = event.which;
+			var maxLength = $(this).attr("maxlength");
+			var length = this.value.length;
+			
+			//all keys including return.
+			if(key >= 33 || key == 13) {
+				if(length == maxLength) {
+					event.preventDefault();
+					$("#error_field").html('Maximum length is 120 characters.');				
+				}
+			}
+			if(length<maxLength) {
+				$("#error_field").html('');
+			}
+		});
+		
 		
 		$("#what_continue").click(function() {
 			challenge_title = $("#challenge_title").val();
 			challenge_declaration = $("#challenge_declaration").val();
 			proof_description = $("#proof_description").val();
-			challenge_goal = $("#challenge_goal").val();
+			challenge_goal = $("#challenge_goal").val().replace(',', '');		// $123,345 comma thousands			
 			challenge_npo = $("#challenge_npo").val();
 			partner_bool = $("#partner_bool").attr("checked");
 			partner_name = $("#partner_name").val();
@@ -930,7 +1008,7 @@ SHOW_HIDE;
 									'text': 'Click to Donate', 
 									'href': 'http://www.beex.org/donate/id/23'
 								},
-							 	'ratings': '5 stars' 
+							 	'ratings': '****' 
 							}, 
 							'media': [{ 
 								'type': 'image', 
@@ -975,19 +1053,23 @@ SHOW_HIDE;
 		
 		
 		
+	
+	
+		
+		
 	});
 </script>
 	
 <div id="challenge_module">
 	<div id="nav_bar">
 <?php if(!$editing) {?>
-		<span class="nav_button" id="nav_who">Who</span>		
+		<span class="nav_button" id="nav_who" style="cursor:default">Who</span>		
 <?}?>		
 		<span class="nav_button" id="nav_what">What</span><span class="nav_button" id="nav_when_where">When/Where</span><span class="nav_button" id="nav_why">Why</span>
 	</div>
 	<div id="help">
-    	<h3>Need Help???</h3>
-        <p>This column has revelent info for the creation step you're on. Check back here if you get stuck.</p>
+    	<h3>Need Help?</h3>
+        <p>This column will provide you with additional info at every step.</p>
 		<div id="help_column">
 			Hello. This is advice on how to complete the current step.
 		</div>
@@ -1003,7 +1085,7 @@ SHOW_HIDE;
                 </div>
 				<h2 style="font-size:14px;">Or, login/register through Facebook connect!</h2>
 				<div class="input_buttons" style="text-align:left; margin:5px 0px;">					
-					<fb:login-button onlogin="window.location='<?=base_url()?>index.php/user/login'"></fb:login-button>
+					<fb:login-button onlogin="window.location='<?=base_url()?>index.php/user/login'">Login with your Facebook Username</fb:login-button>
 				</div>
 			</div>
 			
@@ -1046,11 +1128,13 @@ SHOW_HIDE;
 			</div>			
 		</div>
 		<div id="what_tab" class="creation_step">
+			<?php if(!$joina): ?>
 			<div class="input_wrapper">
 				<label>cluster code</label>
 				<input type="text" name="cluster_id" id="cluster_id">
 				<span id="cluster_ok" name="cluster_ok"></span>
 			</div>
+			<? endif; ?>
  		 	<div class="input_wrapper">
 				<label class="required">challenge title</label>
 				<input type="text" name="challenge_title" id="challenge_title">
@@ -1060,17 +1144,17 @@ SHOW_HIDE;
 				<textarea name="challenge_declaration" id="challenge_declaration"></textarea>
 			</div>
 			<div class="input_wrapper">
-				<label class="required">proof description</label>
-				<textarea name="proof_description" id="proof_description"></textarea>
-			</div>
-			<div class="input_wrapper">
 				<label class="required">fundraising goal</label>
 				<input type="text" name="challenge_goal" id="challenge_goal">
 			</div>
 			<div class="input_wrapper">
-				<label>benefitting npo</label>
+				<label>benefitting nonprofit</label>
 				<?php echo $npo_cell; ?>
 			</div>
+			<div class="input_wrapper">
+				<label class="required">proof description</label>
+				<textarea name="proof_description" id="proof_description"></textarea>
+			</div>						
 			<div class="input_wrapper">
 				<label>partner?</label>
 				<input type="checkbox" name="partner_bool" id="partner_bool">				
@@ -1086,7 +1170,7 @@ SHOW_HIDE;
 			<div class="preview_box" id="preview_box">
             
 				<h1>Preview of Declaration</h1>
-                <p class="text">You can see just what the challenge declaration on your challenge page will look like here, so don't be a fuckin retard!</p>
+                <p class="text">This is exactly what your declaration will look like on your challenge page. Make it sure it looks right to you.</p>
 				<span class="hl" id="preview_pronoun">I</span> will 
 				<span class="dyn_what_will_do hl" id="dyn_what_will_do">_____</span> 
 				if<br />
@@ -1154,27 +1238,16 @@ SHOW_HIDE;
 		<div id="why_tab" class="creation_step">
 			<div class="input_wrapper">
 				<label>blurb</label>
-				<textarea name="challenge_blurb" id="challenge_blurb"></textarea>
+				<textarea name="challenge_blurb" id="challenge_blurb" maxlength="120"></textarea>
 			</div>
 			<div class="input_wrapper">
-				<label>descript</label>
+				<label>description</label>
 				<textarea name="challenge_description" id="challenge_description"></textarea>
 			</div>			
 			<div class="input_wrapper">
 				<label>image (4MB max)</label>
 				<fieldset>
-					<form action="<?php echo base_url(); ?>index.php/ajax/image_upload" method="post" name="sleeker" id="sleeker" enctype="multipart/form-data">
-						<input type="hidden" name="maxSize" value="9999999999" />
-						<input type="hidden" name="maxW" value="200" />
-						<input type="hidden" name="fullPath" value="<?php echo base_url(); ?>/media/challenges/" />
-						<input type="hidden" name="relPath" value="../uploads/" />
-						<input type="hidden" name="colorR" value="255" />
-						<input type="hidden" name="colorG" value="255" />
-						<input type="hidden" name="colorB" value="255" />
-						<input type="hidden" name="maxH" value="300" />
-						<input type="hidden" name="filename" value="filename" />
-						<input type="file" name="filename" onchange="ajaxUpload(this.form,'<?php echo base_url(); ?>index.php/ajax/image_upload?filename=name&amp;maxSize=9999999999&amp;maxW=200&amp;fullPath=http://www.atwebresults.com/php_ajax_image_upload/uploads/&amp;relPath=../uploads/&amp;colorR=255&amp;colorG=255&amp;colorB=255&amp;maxH=300','upload_area','File Uploading Please Wait...&lt;br /&gt;&lt;img src=\'images/loader_light_blue.gif\' width=\'128\' height=\'15\' border=\'0\' /&gt;','&lt;img src=\'images/error.gif\' width=\'16\' height=\'16\' border=\'0\' /&gt; Error in Upload, check settings and path info in source code.'); return false;" />
-					</form>					
+					<form action="<?php echo base_url(); ?>index.php/ajax/image_upload" method="post" name="sleeker" id="sleeker" enctype="multipart/form-data"><input type="hidden" name="maxSize" value="9999999999" /><input type="hidden" name="maxW" value="200" /><input type="hidden" name="fullPath" value="<?php echo base_url(); ?>/media/challenges/" /><input type="hidden" name="relPath" value="../uploads/" /><input type="hidden" name="maxH" value="300" /><input type="hidden" name="filename" value="filename" /><input type="file" name="filename" onchange="ajaxUpload(this.form,'<?php echo base_url(); ?>index.php/ajax/image_upload?filename=name&amp;maxSize=9999999999&amp;maxW=200&amp;fullPath=http://www.atwebresults.com/php_ajax_image_upload/uploads/&amp;relPath=../uploads/&amp;colorR=255&amp;colorG=255&amp;colorB=255&amp;maxH=300','upload_area','File Uploading Please Wait...&lt;br /&gt;&lt;img src=\'images/loader_light_blue.gif\' width=\'128\' height=\'15\' border=\'0\' /&gt;','&lt;img src=\'images/error.gif\' width=\'16\' height=\'16\' border=\'0\' /&gt; Error in Upload, check settings and path info in source code.'); return false;" /></form>					
 				</fieldset>
 				<div id="upload_area" name="upload_area">					
 				</div>			
@@ -1184,11 +1257,11 @@ SHOW_HIDE;
 				<input type="text" id="challenge_video" name="challenge_video" />
 			</div>
 			<div class="input_wrapper">
-				<label>why do u care?</label>
+				<label>why do you care?</label>
 				<textarea name="challenge_whydo" id="challenge_whydo"></textarea>
 			</div>
 			<div class="input_wrapper">
-				<label>why do u want to perform?</label>
+				<label>why are you performing this challenge?</label>
 				<textarea name="challenge_whycare" id="challenge_whycare"></textarea>
 			</div>
             <div class="input_buttons">

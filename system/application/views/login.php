@@ -16,7 +16,6 @@ if($message) {
     FB.init("<?=$this->config->item('facebook_api_key')?>", "/xd_receiver.htm");
 </script>
 
-<a href="#" onclick="FB.Connect.logout(function() {window.location='<?=current_url()?>' }); return false;" >(Logout)</a>
 <?php
 
 echo "<h2>".$header['title']."</h2>";
@@ -52,12 +51,12 @@ else {
 }
 
 $data = array('class'=>'submit');
-if($fb_valid) { $login_btn = 'Login';} else { $login_btn = 'Register'; }
+if(!$fb_valid) { $login_btn = 'Login';} else { $login_btn = 'Register'; }
 echo "<tr><td colspan=2>".form_submit($data, $login_btn)."</td></tr>";
 if ( $user_id == '' ) { // only show the fb-connect button if they HAVE NOT YET CONNECTED
 ?>
 
-    <tr><td colspan=2><fb:login-button onlogin="window.location='<?=current_url()?>'"></fb:login-button></td></tr>
+    <tr><td colspan=2><fb:login-button onlogin="window.location='<?=current_url()?>'">Login with your Facebook Username</fb:login-button></td></tr>
 <?
 }
 

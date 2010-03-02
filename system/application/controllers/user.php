@@ -121,6 +121,7 @@ class User extends Controller {
 			$data['user_id'] = $data['item']->id;
 			$profile = $this->MItems->get('profiles', $data['item']->id, 'user_id');
 
+			
 			if($profile->num_rows()) {
 				
 				//$browser = $this->MItems->getChallenge($data['item']->id, 'challenges.user_id');
@@ -129,7 +130,8 @@ class User extends Controller {
 				$data['browser'] = $browser;
 				$data['owner'] = ($this->session->userdata('user_id') == $data['user_id']) ? true : false;
 				$data['profile'] = $profile->row();
-				$data['sponsor'] = 'Test Sponsor';
+				$data['sponsor'] = 'Test Sponsor';				
+				
 				$this->load->view('user', $data);
 
 			}
@@ -183,166 +185,140 @@ class User extends Controller {
 		
 	}
 
+	function username_check($str)
+	{
+		if ($this->MUser->checkUsername($str))
+		{
+			$this->form_validation->set_message('username_check', 'This email is already in the system');
+			return FALSE;
+		}
+		else
+		{
+			return TRUE;
+		}
+	}
 
 
-	/* Old Login 
-		function login() {
-
-			$data = $this->data;
-
-			$data['header']['title'] = 'Login';
-
-			$data['message'] = '';
+	function login() {
 
 
+		$data = $this->data;
 
-			if($_POST) {
+		$data['header']['title'] = 'Login';
+		$data['message'] = '';
+		if(isset($_SERVER['HTTP_REFERER'])) {
+			if(strpos($_SERVER['HTTP_REFERER'], 'start_a_challenge') !== FALSE) {
+				$this->session->set_userdata("challenge_creation", true);
+			}			
+			elseif(strpos($_SERVER['HTTP_REFERER'], 'cluster/start') !== FALSE) {
+				$this->session->set_userdata("cluster_creation", true);
+			}
+		}
 
-				if($result = $this->MUser->validate_user($_POST['email'], $_POST['password'])) {
+		$data['user'] = '';
+		$data['user_id'] = '';
 
-					$user = $result->row();
+		try {
+			$this->load->library('facebook_connect');			
+			$data['user']	= $this->facebook_connect->user;
+			$data['user_id'] =  $this->facebook_connect->user_id;			
+		}
+		catch (Exception $e) {
+			// exception
+		}
+		$data['fb_valid'] = false;
+		
+		if(ctype_digit($this->facebook_connect->user_id)) { // they hit facebook connect...
+			$this->session->set_userdata("fb_user", $this->facebook_connect->user_id);
+			$data['fb_valid'] = true;
+						
+			if(isset($_POST['email']) && $_POST['email']!='') { // they're a NEW USER connecting fb w/ an email address..
+				$user = array();
+				$user['created'] = date("Y-m-d H:i:s");
+				$user['email'] = $_POST['email'];
+				$user['fb_user'] = $this->facebook_connect->user_id;
+				$user['official'] = 1;
 
-					$userdata = array('logged_in'=>true, 'user_id'=>$user->id, 'username'=>$user->email);
-					if($_POST['email'] == 'zkilgore@gmail.com' || $_POST['email'] == 'devin@beex.org' || $_POST['email'] == 'matt@beex.org') {
-						$userdata['super_user'] = true;	
-					}
-					$this->session->set_userdata($userdata);
-
-					$this->MItems->update('users', array('id'=>$user->id), array('official'=>'1'));
-
-					redirect('user/view/'.$user->id, 'refresh');
-
+				$this->load->library('form_validation');
+				$this->form_validation->set_rules('first_name', 'First name', 'required');
+				$this->form_validation->set_rules('last_name', 'Last name', 'required');				
+				$this->form_validation->set_rules('email', 'Email Address', 'trim|required|valid_email|callback_username_check');				
+				if ($this->form_validation->run() == FALSE) {
+					$data['message'] = 'Error';
 				}
-
 				else {
+					$id = $this->MItems->add('users', $user);
+					
+					$profile = array();
+					$profile['user_id'] = $id;
+					$profile['first_name'] = $_POST['first_name'];
+					$profile['last_name'] = $_POST['last_name'];
+					$profile['created'] = date("Y-m-d H:i:s");
+					$this->MItems->add('profiles', $profile);
+					
+					
+					$userdata = array('logged_in'=>true, 'user_id'=>$id, 'username'=>$_POST['email']);
+					$this->session->set_userdata($userdata);
+					
+					if($this->session->userdata("challenge_creation") == true) {
+						redirect('challenge/start_a_challenge', 'refresh');
+						$this->session->unset_userdata("challenge_creation");
+					}
+					elseif($this->session->userdata("cluster_creation") == true) {
+						redirect('cluster/start', 'refresh');
+						$this->session->unset_userdata("cluster_creation");						
+					}
+					redirect('user/view/'.$id, 'refresh');
+				}
+			}
+			else {
+				if($this->session->userdata("logged_in") && $this->session->userdata("user_id")) { 
+					// they are an existing user, and logged in, and linking accounts
+					$this->MItems->update('users', array('id'=>$this->session->userdata("user_id")), array('fb_user'=>$this->facebook_connect->user_id));
+					redirect('user/edit/'.$this->session->userdata("user_id"), 'refresh');
+				}
+				else { // they are logging in.. 
+					if($result = $this->MUser->validate_fb($this->facebook_connect->user_id)) {			
+						$user = $result->row();
+						$userdata = array('logged_in'=>true, 'user_id'=>$user->id, 'username'=>$user->email);
+						$this->session->set_userdata($userdata);				
+						$this->MItems->update('users', array('id'=>$user->id), array('official'=>'1'));				
+						
+						if(strpos($_SERVER['HTTP_REFERER'], 'start_a_challenge') !== FALSE) {
+							redirect('challenge/start_a_challenge', 'refresh');
+						}
+						else {
+							redirect('user/view/'.$user->id, 'refresh');							
+						}
 
-					$data['message'] = 'There was a problem with your information. Please try again.';
-
-
-
+					}
+					else { // the connect went fine, but they need to enter more info to complete their profile
+						$data['message'] = 'Your Facebook account has linked, registration is almost over! Now just enter your email and first/last name.';
+					}					
 				}
 
+				
+			}
+			
+		}
+		elseif($_POST) {
+			if($result = $this->MUser->validate_user($_POST['email'], $_POST['password'])) {			
+				$user = $result->row();
+				$userdata = array('logged_in'=>true, 'user_id'=>$user->id, 'username'=>$user->email);
+				if($_POST['email'] == 'zkilgore@gmail.com' || $_POST['email'] == 'devin@beex.org' || $_POST['email'] == 'matt@beex.org') {
+					$userdata['super_user'] = true;	
+				}
+				$this->session->set_userdata($userdata);				
+				$this->MItems->update('users', array('id'=>$user->id), array('official'=>'1'));				
+				redirect('user/view/'.$user->id, 'refresh');
 			}
 
-			$this->load->view('login.php', $data);
-
+			else {			
+				$data['message'] = 'There was a problem with your information. Please try again.';
+			}
 		}
-	*/
-
-	// Zachs Login
-		function login() {
-
-	        $data = $this->data;
-	        $data['header']['title'] = 'Login';
-	        $data['message'] = '';
-	        if(isset($_SERVER['HTTP_REFERER'])) {
-	            if(strpos($_SERVER['HTTP_REFERER'], 'start_a_challenge')
-	!== FALSE) {
-	                $this->session->set_userdata("challenge_creation", true);
-	            }
-	        }
-
-	        $data['user'] = '';
-	        $data['user_id'] = '';
-
-	        try {
-	            $this->load->library('facebook_connect');
-	            $data['user']    = $this->facebook_connect->user;
-	            $data['user_id'] =  $this->facebook_connect->user_id;
-	        }
-	        catch (Exception $e) {
-	            // exception
-	        }
-	        $data['fb_valid'] = false;
-
-	        if(ctype_digit($this->facebook_connect->user_id)) { // theyhit facebook connect...
-	            $data['fb_valid'] = true;
-
-	            if(isset($_POST['email']) && $_POST['email']!='') { //they're a NEW USER connecting fb w/ an email address..
-	                $user = array();
-	                $user['created'] = date("Y-m-d H:i:s");
-	                $user['email'] = $_POST['email'];
-	                $user['fb_user'] = $this->facebook_connect->user_id;
-	                $user['official'] = 1;
-
-	                $this->load->library('form_validation');
-	                $this->form_validation->set_rules('first_name', 'First name', 'required');
-	                $this->form_validation->set_rules('last_name', 'Last name', 'required');
-	                $this->form_validation->set_rules('email', 'Email
-	Address', 'trim|required|valid_email|callback_username_check');
-	                if ($this->form_validation->run() == FALSE) {
-	                    $data['message'] = 'Error';
-	                }
-	                else {
-	                    $id = $this->MItems->add('users', $user);
-
-	                    $profile = array();
-	                    $profile['user_id'] = $id;
-	                    $profile['first_name'] = $_POST['first_name'];
-	                    $profile['last_name'] = $_POST['last_name'];
-	                    $profile['created'] = date("Y-m-d H:i:s");
-	                    $this->MItems->add('profiles', $profile);
-
-
-	                    $userdata = array('logged_in'=>true, 'user_id'=>$id, 'username'=>$_POST['email']);
-	                    $this->session->set_userdata($userdata);
-
-	                    if($this->session->userdata("challenge_creation") == true) {
-	                        redirect('challenge/start_a_challenge', 'refresh');
-	                        $this->session->unset_userdata("challenge_creation");
-	                    }
-	                    redirect('user/view/'.$id, 'refresh');
-	                }
-	            }
-	            else {
-	                if($this->session->userdata("logged_in") && $this->session->userdata("user_id")) {
-	                    // they are an existing user, and logged in, and linking accounts
-	                    $this->MItems->update('users', array('id'=>$this->session->userdata("user_id")), array('fb_user'=>$this->facebook_connect->user_id));
-
-						redirect('user/edit/'.$this->session->userdata("user_id"), 'refresh');
-	                }
-	                else { // they are logging in..
-	                    if($result = $this->MUser->validate_fb($this->facebook_connect->user_id)) {
-	                        $user = $result->row();
-	                        $userdata = array('logged_in'=>true, 'user_id'=>$user->id, 'username'=>$user->email);
-	                        $this->session->set_userdata($userdata);
-	                        $this->MItems->update('users', array('id'=>$user->id), array('official'=>'1'));
-
-	                        if(strpos($_SERVER['HTTP_REFERER'], 'start_a_challenge') !== FALSE) {
-	                            redirect('challenge/start_a_challenge', 'refresh');
-	                        }
-	                        else {
-	                            redirect('user/view/'.$user->id, 'refresh');
-	                        }
-
-	                    }
-	                    else { // the connect went fine, but they need to enter more info to complete their profile
-	                        $data['message'] = 'Your Facebook account has linked, registration is almost over! Now just enter your email and first/last name.';
-	                    }
-	                }
-
-
-	            }
-
-	        }
-	        elseif($_POST) {
-	            if($result = $this->MUser->validate_user($_POST['email'], $_POST['password'])) {
-	                $user = $result->row();
-	                $userdata = array('logged_in'=>true, 'user_id'=>$user->id, 'username'=>$user->email);
-	                if($_POST['email'] == 'zkilgore@gmail.com' || $_POST['email'] == 'devin@beex.org' || $_POST['email'] == 'matt@beex.org') {
-	                    $userdata['super_user'] = true;
-	                }
-	                $this->session->set_userdata($userdata);
-	                $this->MItems->update('users', array('id'=>$user->id), array('official'=>'1'));
-	                redirect('user/view/'.$user->id, 'refresh');
-	            }
-
-	            else {
-	                $data['message'] = 'There was a problem with your information. Please try again.';
-	            }
-	        }
-	        $this->load->view('login.php', $data);
-	    }
+		$this->load->view('login.php', $data);
+	}
 
 
 
@@ -352,7 +328,8 @@ class User extends Controller {
 
 		$data['message'] = 'You have been successfully logged out';
 
-		$this->session->unset_userdata(array('logged_in'=>'', 'npo_id'=>'', 'admin'=>'', 'username'=>'', 'user_id'=>''));
+		$this->session->unset_userdata(array('logged_in'=>'', 'npo_id'=>'', 'admin'=>'', 'username'=>'', 'user_id'=>'', 'fb_user'=>''));
+
 
 
 
@@ -361,6 +338,8 @@ class User extends Controller {
 
 
 		redirect('site', 'refresh');
+		
+		
 
 	}
 
@@ -392,23 +371,6 @@ class User extends Controller {
 
 	}
 
-
-
-	function username_check($str)
-
-	{
-
-		if ($this->MUser->checkUsername($str))
-		{
-			$this->form_validation->set_message('username_check', 'This email is already in the system');
-			return FALSE;
-		}
-		else
-		{
-			return TRUE;
-		}
-
-	}
 
 
 
