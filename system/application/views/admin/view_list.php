@@ -6,7 +6,7 @@ $this->load->view('framework/header', $header);
 
 <h2><?php echo $table; ?></h2>
 
-<?php echo $this->MAdmin->generateTable($table, $list); ?>
+<?php echo $this->MAdmin->generateTable($table, $list, $sort); ?>
 
 <script>
 
@@ -23,6 +23,7 @@ jQuery(document).ready(function(){
 				
 				url: base_url + "adminajax/makefeatured/" + id + "/" + feat,
 				success: function(html) {
+					
 					jQuery('#featuredcheck'+feat+id).html(html);
 					jQuery('#featuredcheck'+feat+id).attr('id', "featuredcheck" + oppfeat + id);
 				}
@@ -35,6 +36,7 @@ jQuery(document).ready(function(){
 	jQuery(".deletebutton").click(function() {
 		
 		var id = jQuery(this).attr('id').substr(6);
+		
 		var table = '<?php echo $table; ?>';
 		
 		jQuery.ajax({

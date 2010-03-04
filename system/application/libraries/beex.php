@@ -560,7 +560,7 @@ class Beex {
 			$nposize = strlen($item->name);
 			
 			$npostandard = 24;
-			$decstandard = 50;
+			$decstandard = 40;
 			
 			$hlbstandard = 30;
 			$hlstandard = 24;

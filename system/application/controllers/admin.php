@@ -42,7 +42,7 @@ class Admin extends Controller {
 		}
 	}
 	
-	function donations($sort = 'paymentdate', $dir = 'ASC') {
+	function donors($sort = 'paymentdate', $dir = 'desc') {
 		
 		$data = $this->data;
 		
@@ -50,8 +50,9 @@ class Admin extends Controller {
 			
 			// Dontation Results Table
 			
-			$data['list'] = $this->MAdmin->getList('donors', $sort, $dir);
+			$data['list'] = $this->MAdmin->getDonors('', $sort, $dir);
 			$data['table'] = 'donors';
+			$data['sort'] = array('by'=>$sort, 'dir'=>$dir);
 			
 			// Donation Numbers
 			
@@ -75,14 +76,15 @@ class Admin extends Controller {
 		
 	}
 	
-	function challenges() {
+	function challenges($sort = 'created', $dir = 'desc') {
 		
 		$data = $this->data;
 		
 		if($this->session->userdata('super_user')) {
-			$data['list'] = $this->MAdmin->getList('challenges');
+			$data['list'] = $this->MAdmin->getChallenges('', $sort, $dir);
 			$data['table'] = 'challenges';
-			$this->load->view('admin/view_challenges', $data);
+			$data['sort'] = array('by'=>$sort, 'dir'=>$dir);
+			$this->load->view('admin/view_list', $data);
 		}
 		else {
 			

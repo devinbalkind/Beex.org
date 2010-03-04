@@ -45,7 +45,8 @@ class MStat extends Model{
 	        $user_agent = $this->session->userdata( 'user_agent' );
 
 	        //use a model for inserting data
-	        $this->db->insert('stats', array('zone' => $zone, 'general' => $general, 'specific' => $specific, 'item' => $item, 'session' => $session, 'ip' => $ip, 'user_id' => $user_id, 'user_agent' => $user_agent, 'browser' => $browser, 'browser_version' => $browser_version, 'os' => $os, 'agent' => $agent));
+	        if(is_numeric($item)) 
+				$this->db->insert('stats', array('zone' => $zone, 'general' => $general, 'specific' => $specific, 'item' => $item, 'session' => $session, 'ip' => $ip, 'user_id' => $user_id, 'user_agent' => $user_agent, 'browser' => $browser, 'browser_version' => $browser_version, 'os' => $os, 'agent' => $agent));
 	    }
 	}
 	

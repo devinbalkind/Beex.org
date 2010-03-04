@@ -1000,25 +1000,25 @@ SHOW_HIDE;
 						/* publish to the news feed */
 						var message = 'Support me in my challenge to raise money for charity!'; 
 						var attachment = { 
-							'name': 'I\'m bursting with joy', 
+							'name': challenge_title, 
 							'caption': '{*actor*} started a challenge on http://www.beex.org', 
 							'description': 'I will ' + challenge_declaration + ' if $' + challenge_goal + ' is raised for ' + $("#challenge_npo option:selected").text(), 
 							'properties': { 
-								'category': { 
+								'Donate': { 
 									'text': 'Click to Donate', 
-									'href': 'http://www.beex.org/donate/id/23'
-								},
-							 	'ratings': '****' 
+									'href': 'http://www.beex.org/challenge/view/'+new_challenge_id
+								}
+							 	
 							}, 
 							'media': [{ 
 								'type': 'image', 
 								'src': 'http://sandbox.beex.org/images/imagedefault.png', 
-								'href': 'http://www.google.com'
+								'href': 'http://www.beex.org/challenge/view/'+ new_challenge_id
 							}]
 						}; 
 						var action_links = [{
-							'text':'Recaption this', 
-							'href':'http://bit.ly/19DTbF'
+							'text':'Donate!', 
+							'href':'http://www.beex.org/challenge/view/'+ new_challenge_id
 						}]; 
 						FB.Connect.streamPublish(message, attachment, action_links, null, '', publishCallback);		
 						

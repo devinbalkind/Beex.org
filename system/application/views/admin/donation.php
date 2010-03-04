@@ -12,7 +12,8 @@ $this->load->view('framework/header', $header);
 <h3>Last 30 Days: $<?php echo $total30; ?></h3>
 <h3>All Time: $<?php echo $totalraised; ?></h3>
 
-<?php echo $this->MAdmin->generateTable($table, $list); ?>
+
+<?php echo $this->MAdmin->generateTable($table, $list, $sort); ?>
 
 <?php
 

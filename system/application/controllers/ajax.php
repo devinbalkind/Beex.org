@@ -100,7 +100,7 @@ class Ajax extends Controller {
 
 
 		// these fields do not yet exist in the db...
-		unset($_POST['proof_description']);
+		
 		unset($_POST['partner_bool']);
 		unset($_POST['partner_name']);
 		unset($_POST['partner_email']);
@@ -284,44 +284,47 @@ IMG;
 		
 	}
 	
-	// function get_browsers() {
-	// 	
-	// 	if($_POST['type'] == 'challenges') {
-	// 		if($_POST['sort'] == 'featured') {
-	// 			echo $this->~->create_browser($this->MItems->getChallenge(1, 'featured', 'challenges.created', 'desc', 5), 'challenges');
-	// 		}
-	// 		elseif($_POST['sort'] == 'ending') {
-	// 			echo $this->beex->create_browser($this->MItems->getChallenge(date('Y-m-d'), 'challenge_completion >', 'challenge_completion', 'asc', 5), 'challenges');
-	// 		}
-	// 		elseif($_POST['sort'] == 'new') {
-	// 			echo $this->beex->create_browser($this->MItems->getChallenge('', '', 'challenges.created', 'desc', 5), 'challenges');
-	// 		}
-	// 		else {
-	// 			echo $this->beex->create_browser($this->MItems->getChallenge('', '', 'challenges.created', 'asc', 5), 'challenges');
-	// 		}
-	// 			
-	// 	}	
-	// 	
-	// 	if($_POST['type'] == 'clusters') {
-	// 		if($_POST['sort'] == 'featured') {
-	// 			echo $this->beex->create_browser($this->MItems->getCluster(1, 'clusters.featured', 'clusters.created', 'desc', 5), 'clusters');
-	// 		}
-	// 		else {
-	// 			echo $this->beex->create_browser($this->MItems->getCluster('', '', 'clusters.created', 'asc', 5), 'clusters');
-	// 		}
-	// 			
-	// 	}	
-	// 	
-	// 	if($_POST['type'] == 'users') {
-	// 		if($_POST['sort'] == 'popular') {
-	// 			$browser = $this->MItems->get('profiles', '', '', 'created', 'desc');
-	// 		}
-	// 		else {
-	// 			$browser = $this->MItems->get('profiles', '', '', 'created', 'desc');
-	// 		}
-	// 	}
-	// }
-	// 
+	function get_browsers() {
+	 	
+	 	if($_POST['type'] == 'challenges') {
+			if($_POST['sort'] == 'featured') {
+				echo $this->create_browser($this->MItems->getChallenge(1, 'featured', 'challenges.created', 'desc', 5), 'challenges');
+			}
+			elseif($_POST['sort'] == 'ending') {
+				echo $this->beex->create_browser($this->MItems->getChallenge(date('Y-m-d'), 'challenge_completion >', 'challenge_completion', 'asc', 5), 'challenges');
+			}
+			elseif($_POST['sort'] == 'new') {
+				echo $this->beex->create_browser($this->MItems->getChallenge('', '', 'challenges.created', 'desc', 5), 'challenges');
+			}
+			elseif($_POST['sort'] == 'raised') {
+				echo $this->beex->create_browser($this->MItems->getChallengesMostRaised(5));
+			}
+			else {
+				echo $this->beex->create_browser($this->MItems->getChallenge('', '', 'challenges.created', 'desc', 5), 'challenges');
+			}
+
+		}	
+
+		if($_POST['type'] == 'clusters') {
+			if($_POST['sort'] == 'featured') {
+				echo $this->beex->create_browser($this->MItems->getCluster(1, 'clusters.featured', 'clusters.created', 'desc', 5), 'clusters');
+			}
+		else {
+				echo $this->beex->create_browser($this->MItems->getCluster('', '', 'clusters.created', 'asc', 5), 'clusters');
+			}
+
+		}	
+
+		if($_POST['type'] == 'users') {
+			if($_POST['sort'] == 'popular') {
+				$browser = $this->MItems->get('profiles', '', '', 'created', 'desc');
+			}
+			else {
+				$browser = $this->MItems->get('profiles', '', '', 'created', 'desc');
+			}
+		}
+	}
+	 
 }
 
 ?>

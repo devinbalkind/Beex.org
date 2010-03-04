@@ -90,6 +90,7 @@ class MItems extends Model {
 
 	function get($table, $id='', $key='', $order='', $order_way='', $limit='', $offset='') {
 
+
 		if($order) {
 
 			$this->db->order_by($order, $order_way);
@@ -645,17 +646,20 @@ class MItems extends Model {
 
 
 	function getDropdownArray($table, $val, $key = 'id') {
-
-		$result = $this->db->get($table);
-
-
-
+		
+		if($table == 'npos') {
+			$result = $this->get($table, array('approved'=>'1'));
+		}
+		else {
+			$result = $this->get($table);
+		}
+		
 		$array = array();
 
 
 
 		foreach($result->result() as $row) {
-
+		
 			$array[$row->$key] = $row->$val;
 
 		}

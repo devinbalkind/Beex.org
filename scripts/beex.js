@@ -1,7 +1,7 @@
 // JavaScript Document
 
-//var base_url = "http://localhost:8888/beex/index.php/";
-var base_url = "http://www.beex.org/index.php/";
+var base_url = "http://localhost:8888/beex/index.php/";
+//var base_url = "http://www.beex.org/index.php/";
 
 jQuery(document).ready(function(){
 	

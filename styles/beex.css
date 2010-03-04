@@ -233,7 +233,7 @@ div#BrowserModule {padding:0;}
 #ActivityFeed {padding:10px 12px 20px; background-color:#ffffcd;}
 #ActivityFeed h2 {color:#999; font:20px "Franklin Gothic Book", Verdana, Geneva, sans-serif; text-transform:uppercase; text-align:left; margin:0px; padding:0px; background-color:inherit;}
 #ActivityFeed a {color:#EFAB32;}
-#ActivityFeed .donationnote {font-style:italic; margin:3px 5px;}
+#ActivityFeed .donationnote {font-style:italic; margin:3px 5px; width:148px; word-wrap:break-word;}
 
 
 /* Mini Profile */
