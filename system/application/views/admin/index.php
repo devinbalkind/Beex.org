@@ -2,6 +2,8 @@
 
 $this->load->view('framework/header', $header);
 
+$this->load->view('admin/menu');
+
 ?>
 
 <h2>Welcome to the Admin Backend</h2>

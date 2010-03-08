@@ -6,8 +6,11 @@ $this->load->view('admin/menu');
 
 ?>
 
-<h2><?php echo $table; ?></h2>
+<h2><?php echo $table; ?> for <?php echo $cluster->cluster_title; ?></h2>
 
+<p>Number of Challenges: <?php echo $nochallenges; ?></p>
+<p>Creator: <?php echo $cluster->firstname.' '.$cluster->lastname; ?></p>
+<p>Total Raised: $<?php echo number_format($cluster->raised); ?></p>
 <?php 
 
 echo $this->MAdmin->generateTable($table, $list, $sort, $id);

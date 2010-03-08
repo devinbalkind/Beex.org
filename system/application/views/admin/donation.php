@@ -2,7 +2,10 @@
 
 $this->load->view('framework/header', $header);
 
+$this->load->view('admin/menu');
+
 ?>
+
 
 <h2>Welcome to the Admin Backend</h2>
 
@@ -13,7 +16,7 @@ $this->load->view('framework/header', $header);
 <h3>All Time: $<?php echo $totalraised; ?></h3>
 
 
-<?php echo $this->MAdmin->generateTable($table, $list, $sort); ?>
+<?php echo $this->MAdmin->generateTable($table, $list, $sort, $id, $datatable); ?>
 
 <?php
 

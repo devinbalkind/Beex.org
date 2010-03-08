@@ -45,8 +45,21 @@ class MStat extends Model{
 	        $user_agent = $this->session->userdata( 'user_agent' );
 
 	        //use a model for inserting data
-	        if(is_numeric($item)) 
+	        if(is_numeric($item)) {
 				$this->db->insert('stats', array('zone' => $zone, 'general' => $general, 'specific' => $specific, 'item' => $item, 'session' => $session, 'ip' => $ip, 'user_id' => $user_id, 'user_agent' => $user_agent, 'browser' => $browser, 'browser_version' => $browser_version, 'os' => $os, 'agent' => $agent));
+			
+				if($this->db->get_where('hits', array('type'=>$general, 'item_id' => $item))->num_rows()) {
+					
+					$this->db->query("UPDATE hits SET hits=hits+1 WHERE type='$general' AND item_id='$item';");
+					
+				}
+				else {
+					
+					$this->db->insert('hits', array('item_id'=>$item, 'type'=>$general, 'hits'=>1));
+					
+				}
+			}	
+			
 	    }
 	}
 	

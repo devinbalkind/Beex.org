@@ -1,6 +1,7 @@
 <?php
 
 $this->load->view('framework/header', $header);
+$this->load->view('admim/menu');
 
 ?>
 

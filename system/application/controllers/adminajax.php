@@ -11,9 +11,9 @@ class Adminajax extends Controller {
 		$this->data['data']['item'] = '';
 	}
 	
-	function makefeatured($id, $featured) {
+	function makefeatured($id, $featured, $table) {
 		
-		$this->MItems->update('challenges', $id, array('featured' => $featured));
+		$this->MItems->update($table, $id, array('featured' => $featured));
 		
 		$ret = ($featured) ? 'Featured' : "Not Featured";
 		
