@@ -136,7 +136,8 @@ class MAdmin extends Model{
 							$link .= "/".$row->id;
 							break;
 						default :
-							$link .= element('speciallink', $data);
+							$speciallink = element('speciallink', $data);
+							$link .= "/".$row->$speciallink;
 							break;
 					endswitch;
 					

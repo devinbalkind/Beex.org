@@ -604,7 +604,11 @@ class Beex {
 						<p><span class='hl'><?php echo $pronoun; ?></span> will <span class='hl'><?php echo anchor('challenge/view/'.$item->id, $item->challenge_declaration); ?></span> if<br /><span class='hlb'>$<?php echo $item->challenge_goal; ?></span>
 						<br />is raised for <br />
 						<span class='hlb'><?php echo anchor('npo/view/'.$item->challenge_npo, $item->name); ?></span>
-
+						<?php if($item->sponsor_id) : ?>
+							with support from <?php echo anchor($item->sponsor_link, $item->sponsor_name); ?>
+							<img src="<?php echo base_url(); ?>media/sponsors/<?php echo $item->image; ?>">
+						<?php endif; ?>
+						</p>
 						<div style="clear:both;"></div>
 					</td>
 			   </tr>

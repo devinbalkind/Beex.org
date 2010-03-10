@@ -241,7 +241,9 @@ class MItems extends Model {
 
 	function getChallenge($id = '', $key='challenges.id', $order='', $order_way='', $limit='', $offset='') {
 
-		$this->db->select('challenges.*, profiles.*, npos.name');
+		$this->db->select('challenges.*, profiles.*, npos.name, sponsors.image, sponsors.name AS sponsor_name, sponsors.id AS sponsor_id, sponsors.link AS sponsor_link');
+
+		$this->db->join('sponsors', 'sponsors.item_id = challenges.id AND sponsors.item_type = \'challenge\'', 'left');
 
 		$this->db->from('challenges');
 

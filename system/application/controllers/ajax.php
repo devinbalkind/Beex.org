@@ -109,7 +109,12 @@ class Ajax extends Controller {
 		$_POST['challenge_completion'] = ($_POST['challenge_completion']) ? date('Y-m-d', strtotime($_POST['challenge_completion'])) : '';
 		$_POST['challenge_fr_completed'] = ($_POST['challenge_fr_completed']) ? date('Y-m-d', strtotime($_POST['challenge_fr_completed'])) : '';
 		$_POST['challenge_proof_upload'] = ($_POST['challenge_proof_upload']) ? date('Y-m-d', strtotime($_POST['challenge_proof_upload'])) : '';
-
+		
+		
+		if(!$edit_id) {
+			$_POST['created'] = date('Y-m-d H:i:s');
+		}
+		
 		foreach($_POST as $key => $val) {
 			if(!$val) {
 				unset($_POST[$key]);	
@@ -119,7 +124,7 @@ class Ajax extends Controller {
 
 		
 		if(isset($edit_id) && $edit_id != '') {
-
+			
 			unset($_POST['user_id']);		
 			$this->MItems->update('challenges', $edit_id, $_POST);
 			$ret['challenge_id'] = $edit_id;
@@ -135,6 +140,18 @@ class Ajax extends Controller {
 			if(@$teammate) {
 				$this->add_teammate($teammate, array('id'=>$challenge_id, 'name'=>$_POST['challenge_title']));
 			}
+			
+			if($sponsor_data = $this->session->userdata('sponsor_info')) {
+				
+				$sponsor_data['item_id'] = $challenge_id;
+				$sponsor_data['item_type'] = 'challenge';
+				$sponsor_data['link'] = "http://www.google.com";
+				$sponsor_data['name'] = "Google";
+				
+				$this->MItems->add('sponsors', $sponsor_data);
+				
+			}
+			
 			$ret['challenge_id'] = $challenge_id;			
 		}
 		else {
@@ -176,6 +193,50 @@ class Ajax extends Controller {
 					$challenge_info = $this->session->userdata("challenge_info");
 					$challenge_info['challenge_image'] = $upload_result;
 					$this->session->set_userdata("challenge_info", $challenge_info);				
+			}	
+			else {
+				$this->session->set_userdata("cluster_image", $upload_result);
+			}		
+			echo <<<IMG
+				<img src="{$upload_filepath}">
+IMG;
+			$imgUploaded = true;
+		}
+		else {
+			$imgUploaded = false;
+			echo "There was a problem with your upload - try again!";
+		}
+
+
+	}
+	
+	function sponsor_image_upload() {
+		
+		$filename = strip_tags($_REQUEST['filename']);
+		$maxSize = strip_tags($_REQUEST['maxSize']);
+		$maxW = strip_tags($_REQUEST['maxW']);
+		$fullPath = strip_tags($_REQUEST['fullPath']);
+		$relPath = strip_tags($_REQUEST['relPath']);
+		$colorR = strip_tags($_REQUEST['colorR']);
+		$colorG = strip_tags($_REQUEST['colorG']);
+		$colorB = strip_tags($_REQUEST['colorB']);
+		$maxH = strip_tags($_REQUEST['maxH']);		
+		
+		$foldername = "sponsors";
+		
+		$filesize_image = $_FILES['sponsor_filename']['size'];
+		if((strpos($_FILES['sponsor_filename']['type'], 'image') !== FALSE) && $filesize_image > 0) {
+			$upload_result = $this->beex->do_upload($_FILES, 'sponsor_filename', './media/'. $foldername .'/');
+			$upload_filepath = base_url() . 'media/'. $foldername .'/' . $upload_result;
+			$upload_metadata = $this->upload->data();
+
+			$width = $upload_metadata['image_width'];
+			$height = $upload_metadata['image_height'];
+			if($foldername == 'sponsors') {			
+					$sponsor_info = $this->session->userdata("sponsor_info");
+					unset($sponsor_info['sponsor_image']);
+					$sponsor_info['image'] = $upload_result;
+					$this->session->set_userdata("sponsor_info", $sponsor_info);				
 			}	
 			else {
 				$this->session->set_userdata("cluster_image", $upload_result);

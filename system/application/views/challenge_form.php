@@ -908,7 +908,7 @@ SHOW_HIDE;
 			});
 		});
 	
-		tab_list = ["who","what","when_where","why"];
+		tab_list = ["who","what","when_where","why", "sponsor"];
 		
 		
 	
@@ -916,6 +916,7 @@ SHOW_HIDE;
 			if(current_tab != 'who_tab') {
 				$("#when_where_tab").hide();
 				$("#why_tab").hide();
+				$(".creation_step").hide();
 				$("#what_tab").show();
 				for(tab in tab_list) {
 					$("#nav_" + tab_list[tab]).removeClass("bold");
@@ -927,8 +928,10 @@ SHOW_HIDE;
 		});
 		$("#nav_when_where").click(function() {
 			if(current_tab != 'who_tab') {				
+				$(".creation_step").hide();
 				$("#when_where_tab").show();
 				$("#why_tab").hide();
+				
 				$("#what_tab").hide();
 				for(tab in tab_list) {
 					$("#nav_" + tab_list[tab]).removeClass("bold");
@@ -941,7 +944,19 @@ SHOW_HIDE;
 			if(current_tab != 'who_tab') {			
 				$("#when_where_tab").hide();
 				$("#what_tab").hide();
+				$(".creation_step").hide();
 				$("#why_tab").show();
+				for(tab in tab_list) {
+					$("#nav_" + tab_list[tab]).removeClass("bold");
+				}
+				$(this).addClass("bold");
+			}			
+		});
+		
+		$("#nav_sponsor").click(function() {
+			if(current_tab != 'who_tab') {
+				$(".creation_step").hide();
+				$("#sponsor_tab").show();
 				for(tab in tab_list) {
 					$("#nav_" + tab_list[tab]).removeClass("bold");
 				}
@@ -962,6 +977,15 @@ SHOW_HIDE;
 			$("#when_where_tab").show();
 			$("#nav_when_where").addClass("bold");
 			$("#nav_why").removeClass("bold");
+			
+//			$("#help_column").html(help_column['when_where_tab']);			
+		});
+		
+		$("#sponsor_previous").click(function() {
+			$("#sponsor_tab").hide();
+			$("#why_tab").show();
+			$("#nav_why").addClass("bold");
+			$("#nav_sponsor").removeClass("bold");
 			
 //			$("#help_column").html(help_column['when_where_tab']);			
 		});
@@ -1024,8 +1048,9 @@ SHOW_HIDE;
 						
 						<?
 						} 
-						else { ?>						
-						window.location = '<?php echo base_url(); ?>index.php/challenge/view/' + new_challenge_id;											
+						else { ?>
+							publishCallback();						
+							//window.location = '<?php echo base_url(); ?>index.php/challenge/view/' + new_challenge_id;											
 						<? } ?>										
 					}
 					else {
@@ -1035,7 +1060,17 @@ SHOW_HIDE;
 			});
 			
 			function publishCallback(a,b) {
-				window.location = '<?php echo base_url(); ?>index.php/challenge/view/' + new_challenge_id;
+				
+				$("#why_tab").hide();
+				$("#sponsor_tab").show();
+				$("#nav_why").removeClass("bold");
+				$("#nav_why").addClass("arrow");
+				$("#nav_sponsor").addClass("bold");
+				$("#error_field").html("");
+				why_ok = true;
+				current_tab = 'sponsor_tab';
+				
+				//window.location = '<?php echo base_url(); ?>index.php/challenge/view/' + new_challenge_id;
 				
 			}
 					
@@ -1065,7 +1100,7 @@ SHOW_HIDE;
 <?php if(!$editing) {?>
 		<span class="nav_button" id="nav_who" style="cursor:default">Who</span>		
 <?}?>		
-		<span class="nav_button" id="nav_what">What</span><span class="nav_button" id="nav_when_where">When/Where</span><span class="nav_button" id="nav_why">Why</span>
+		<span class="nav_button" id="nav_what">What</span><span class="nav_button" id="nav_when_where">When/Where</span><span class="nav_button" id="nav_why">Why</span><span class="nav_button" id="nav_sponsor">Sponsor</span>
 	</div>
 	<div id="help">
     	<h3>Need Help?</h3>
@@ -1267,6 +1302,28 @@ SHOW_HIDE;
             <div class="input_buttons">
             	<img src="<?php echo base_url(); ?>images/buttons/prev.gif" name="why_previous" id="why_previous" value="Go back to edit the previous step" />
                 <img src="<?php echo base_url(); ?>images/buttons/finish.gif" name="why_continue" id="why_continue" value="Finish creating your challenge!" />
+				
+            </div>
+		</div>
+		
+		<div id="sponsor_tab" class="creation_step">
+			<?php echo "sponsor_info"; print_r($this->session->userdata('sponsor_info')); ?>
+			<div class="input_wrapper">
+				<label>Sponsor Name</label>
+				<textarea name="challenge_blurb" id="challenge_blurb" maxlength="120"></textarea>
+			</div>
+				
+			<div class="input_wrapper">
+				<label>image (4MB max)</label>
+				<fieldset>
+					<form action="<?php echo base_url(); ?>index.php/ajax/sponsor_image_upload" method="post" name="sleeker2" id="sleeker2" enctype="multipart/form-data"><input type="hidden" name="maxSize" value="9999999999" /><input type="hidden" name="maxW" value="200" /><input type="hidden" name="fullPath" value="<?php echo base_url(); ?>/media/sponsors/" /><input type="hidden" name="relPath" value="../uploads/" /><input type="hidden" name="maxH" value="300" /><input type="hidden" name="name" value="sponsor_filename" /><input type="file" name="sponsor_filename" onchange="ajaxUpload(this.form,'<?php echo base_url(); ?>index.php/ajax/sponsor_image_upload?filename=name&amp;maxSize=9999999999&amp;maxW=200&amp;fullPath=<?php echo base_url(); ?>/media/sponsors/&amp;relPath=../uploads/&amp;colorR=255&amp;colorG=255&amp;colorB=255&amp;maxH=300','sponsor_upload_area','File Uploading Please Wait...&lt;br /&gt;&lt;img src=\'images/loader_light_blue.gif\' width=\'128\' height=\'15\' border=\'0\' /&gt;','&lt;img src=\'images/error.gif\' width=\'16\' height=\'16\' border=\'0\' /&gt; Error in Upload, check settings and path info in source code.'); return false;" /></form>					
+				</fieldset>
+				<div id="sponsor_upload_area" name="sponsor_upload_area">					
+				</div>			
+			</div>
+            <div class="input_buttons">
+            	<img src="<?php echo base_url(); ?>images/buttons/prev.gif" name="sponsor_previous" id="sponsor_previous" value="Go back to edit the previous step" />
+                <img src="<?php echo base_url(); ?>images/buttons/finish.gif" name="sponsor_continue" id="sponsor_continue" value="Finish creating your challenge!" />
 				
             </div>
 		</div>

@@ -553,4 +553,4 @@ fieldset {border:none; padding:0; margin:0;}
 .preview_box .text {text-align:left; font:10px Verdana, Geneva, sans-serif;}
 
 .nav_button {width:122px; line-height:27px; margin-left:-10px; display:block; float:left; padding-bottom:1px;}
-#nav_bar .arrow {background-image:url("/images/backgrounds/arrow_button.gif"); color:#fff; background-repeat:none;}
+#nav_bar .arrow {background-image:url("../images/backgrounds/arrow_button.gif"); color:#fff; background-repeat:none;}
