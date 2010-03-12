@@ -21,6 +21,16 @@ class Adminajax extends Controller {
 		
 	}
 	
+	function makeapproved($id, $approved) {
+		
+		$this->MItems->update('npos', $id, array('approved' => $approved));
+		
+		$ret = ($approved) ? 'Approved' : "Not Approved";
+		
+		echo $ret;
+		
+	}
+	
 	function delete($table, $id) {
 		
 		$this->MItems->delete($table, $id);

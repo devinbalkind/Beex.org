@@ -19,7 +19,7 @@ class MAdmin extends Model{
 			'lastname' => array('name' => "Last Name", 'type' => 'data', 'link' => 'user/view', 'speciallink' => 'user_id'),
 			'firstname' => array('name' => "First Name", 'type' => 'data', 'link' => 'user/view', 'speciallink' => 'user_id'),
 			'challenge_title' => array('name' => 'Title', 'link' => 'challenge/view', 'type' => 'data'),
-			'nponame' => array('name' => "Nonprofit", 'type' => 'data', 'link' => 'npo/view', 'speciallink' => 'npoid'),
+			'nponame' => array('name' => "Nonprofit", 'type' => 'data', 'link' => 'admin/npo', 'speciallink' => 'npoid'),
 			'nodonors' => array('name'=>'# Donors', 'type'=>'data', 'link'=>'admin/donorsfor', 'speciallink' => 'addtable'),
 			'raised' => array('name' => 'Amount Raised', 'type' => 'data', 'formattype' => 'money'),
 			'challenge_goal' => array('name' => 'Goal', 'type' => 'data', 'formattype' => 'money'),
@@ -48,7 +48,7 @@ class MAdmin extends Model{
 			'lastname' => array('name' => "Last Name", 'type' => 'data', 'link' => 'user/view', 'speciallink' => 'user_id'),
 			'firstname' => array('name' => "First Name", 'type' => 'data', 'link' => 'user/view', 'speciallink' => 'user_id'),
 			'cluster_title' => array('name' => 'Title', 'link' => 'cluster/view', 'type' => 'data'),
-			'nponame' => array('name' => "Nonprofit", 'type' => 'data', 'link' => 'npo/view', 'speciallink' => 'npoid'),
+			'nponame' => array('name' => "Nonprofit", 'type' => 'data', 'link' => 'admin/npo', 'speciallink' => 'npoid'),
 			'nochallenges' => array('name' => '# Challenges (Click to View Challenges)', 'link'=>'admin/cluster', 'type' => 'nochallenges'),
 			'nodonors' => array('name'=>'# Donors', 'type'=>'data', 'link' => 'admin/donorsfor', 'speciallink' => 'addtable'),
 			'raised' => array('name' => 'Amount Raised', 'type' => 'data', 'formattype' => 'money'),
@@ -58,6 +58,25 @@ class MAdmin extends Model{
 			'edit' => array('name' => 'Edit', 'value'=>'Edit', 'link'=> 'cluster/edit', 'type' => 'edit'),
 			'delete' => array('name'=>'Delete', 'value' => 'Delete', 'type' => 'delete'),
 			'featuredcheck' => array('name'=>'Featured?', 'type' => 'featuredcheck')
+			
+		);
+		
+		$users = array(
+			
+			'lastname' => array('name' => "Last Name", 'type' => 'data', 'link' => 'admin/user'),
+			'firstname' => array('name' => "First Name", 'type' => 'data', 'link' => 'admin/user'),
+			'email' => array('name'=> 'Email', 'type'=>'data'),
+			'edit' => array('name' => 'Edit', 'value'=>'Edit', 'link'=> 'user/edit', 'type' => 'edit'),
+			'delete' => array('name'=>'Delete', 'value' => 'Delete', 'type' => 'delete')
+			
+		);
+		
+		$npos  = array(
+			
+			'name' => array('name' => "NPO Name", 'type' => 'data', 'link' => 'admin/npo'),
+			'approve' => array('name'=>'Approved', 'type'=>'approve'),
+			'edit' => array('name' => 'Edit', 'value'=>'Edit', 'link'=> 'user/edit', 'type' => 'edit'),
+			'delete' => array('name'=>'Delete', 'value' => 'Delete', 'type' => 'delete')
 			
 		);
 		
@@ -80,11 +99,7 @@ class MAdmin extends Model{
 		
 		$output .= "</tr>";
 		
- 		if($table == "users") {
-			
-			$output .= "<tr><th>User Email</th><th>Edit</th><th>Delete</th></tr>";
-			
-		}
+ 		
 		
 		
 		foreach($results->result() as $row) {
@@ -93,7 +108,7 @@ class MAdmin extends Model{
 			
 			foreach($$table as $title => $data) {
 				
-				$output .= "<td class='cell cell-".element('type', $data)." id='".$title."-".$row->id."'>";
+				$output .= "<td class='cell cell-".element('type', $data)."' id='".$title."-".$row->id."'>";
 				
 				//specify contents of cell
 				switch(element('type', $data)) :
@@ -116,6 +131,9 @@ class MAdmin extends Model{
 						break;
 					case 'delete' :
 						$value = "<span class='deletebutton' id='delete".$row->id."'>".element('value', $data, 'Delete')."</span>";
+						break;
+					case 'approve' : 
+						$value = "<span class='approvebutton' id='approved".(($row->approve == 'Approved') ? "0" : "1").$row->id."'>".$row->approve."</span>";
 						break;
 					case 'nochallenges' :
 						$value = $this->getNoChallenges($row->id);
@@ -152,37 +170,7 @@ class MAdmin extends Model{
 			}
 			
 			$output .= "</tr>";
-			/*
-			if($table == 'challenges') {
-				$output .= "
-				<tr>
-				 <td>".anchor('challenge/view/'.$row->id, $row->challenge_title)."</td>
-				 <td>".anchor('challenge/edit_a_challenge/'.$row->id, "Edit")."</td>
-				 <td><span class='deletebutton' id='delete".$row->id."'>Delete</span></td>
-				 <td><span class='featuredcheck' id='featuredcheck".(($row->featured) ? "0" : "1").$row->id."'>". (($row->featured) ? "Featured" : "Not Featured")."</span></td>
-				</tr>";
-			}
-			if($table == 'clusters') {
-				
-				$output .= "
-				<tr>
-				 <td>".anchor('cluster/view/'.$row->id, $row->cluster_title)."</td>
-				 <td>".anchor('cluster/edit/'.$row->id, "Edit")."</td>
-				 <td>".anchor('adminajax/delete/clusters/'.$row->id, "Delete")."</td>
-				</tr>";
-				
-			}
-			*/
-			if($table == 'users') {
-				
-				$output .= "
-				<tr>
-				 <td>".anchor('user/view/'.$row->id, $row->email)."</td>
-				 <td>".anchor('user/edit/'.$row->id, "Edit")."</td>
-				 <td><span class='deletebutton' id='delete".$row->id."'>Delete</span></td>
-				</tr>";
-				
-			}
+		
 		}
 		
 		$output .= "</table>";
@@ -198,6 +186,7 @@ class MAdmin extends Model{
 		$this->db->join('donors', 'donors.itemnumber = challenges.id', 'left');
 		$this->db->join('npos', 'npos.id = challenges.challenge_npo');
 		$this->db->join('hits', 'hits.item_id = challenges.id', 'left');
+		$this->db->join('teammates', 'teammates.challenge_id = challenges.id', 'left');
 		$this->db->group_by('challenges.id');
 		
 		if($where) {
@@ -219,9 +208,14 @@ class MAdmin extends Model{
 		$this->db->join('challenges', 'challenges.cluster_id = clusters.id', 'left');
 		$this->db->join('donors', 'donors.itemnumber = challenges.id', 'left');
 		$this->db->join('npos', 'npos.id = clusters.cluster_npo');
+		$this->db->join('admins', 'admins.cluster_id = admins.id', 'left');
 
 		$this->db->group_by(array('clusters.id'));
 		
+		
+		if($where) {
+			$this->db->where($where);
+		}
 		if($sort) {
 			$this->db->order_by($sort, $dir);
 		}
@@ -248,18 +242,67 @@ class MAdmin extends Model{
 		
 	}
 	
-	function getNoChallenges($id) {
+	function getNpo($id) {
+		
+		$this->db->select('npos.*, SUM(donors.mc_gross) AS raised');
+		
+		$this->db->join('challenges', 'challenges.challenge_npo = npos.id', 'left');
+		$this->db->join('donors', 'donors.itemnumber = challenges.id', 'left');
+		
+		$this->db->group_by(array('npos.id'));
+		
+		$this->db->where('npos.id', $id);
+		
+		return $this->db->get('npos')->row();
+		
+	}
+	
+	function getNoChallenges($id, $table = 'clusters') {
 		
 		$this->db->select('COUNT(*) AS num');
-		$this->db->join('challenges', 'challenges.cluster_id = clusters.id');
 		
-		return $this->db->get_where('clusters', array('clusters.id'=>$id))->row()->num;
+		if($table == 'clusters') {
 		
+			$this->db->join('challenges', 'challenges.cluster_id = clusters.id');
+		
+			return $this->db->get_where('clusters', array('clusters.id'=>$id))->row()->num;
+		}
+		elseif($table == 'npos') {
+			
+			$this->db->join('challenges', 'challenges.challenge_npo = npos.id');
+		
+			return $this->db->get_where('npos', array('npos.id'=>$id))->row()->num;
+			
+		}
 	}
 	
 	function getUsers($where = '', $sort = 'created', $dir = 'desc', $limit = '', $offset = '') {
 		
-		$this->db->select('users.id AS id, profiles.first_name AS firstname, profiles.last_name AS lastname');
+		$this->db->select('users.id AS id, users.created AS created,  profiles.first_name AS firstname, profiles.last_name AS lastname, users.email AS email');
+		
+		$this->db->join('profiles', 'profiles.user_id = users.id');
+		
+		if($sort) {
+			$this->db->order_by($sort, $dir);
+		}
+		
+		return $this->db->get('users');
+		
+		
+		
+	}
+	
+	function getNpos($where = '', $sort = 'name', $dir = 'desc', $limit = '', $offset = '') {
+		
+		$this->db->select('npos.id AS id, npos.created AS created,  npos.name AS name, IF(npos.approved > 0, \'Approved\', \'Not Approved\') AS approve', FALSE);
+		
+		if($sort) {
+			$this->db->order_by($sort, $dir);
+		}
+		
+		return $this->db->get('npos');
+		
+		
 		
 	}
 	

@@ -27,6 +27,10 @@ else {
 
 <link href="<?php echo base_url(); ?>styles/colorbox.css" rel="stylesheet" type="text/css" />
 
+<?php if(@$admin) : ?>
+<link rel="stylesheet" href="<?php echo base_url(); ?>styles/admin.css" />
+<?php endif; ?>	
+
 <link rel="Shortcut Icon" href="/favicon.ico">
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
 <link rel="shortcut icon" href="favicon.ico">
@@ -73,7 +77,10 @@ else {
 	 	if($user_id = $this->session->userdata('user_id')) :
 	
 	?>
-
+			
+			<?php if($this->session->userdata('super_user')) : ?>
+				<?php echo anchor('admin/', 'Admin'); ?> &bull;
+			<?php endif; ?>
 			<script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php" type="text/javascript"></script>
 
 			<script type="text/javascript">
@@ -124,4 +131,4 @@ else {
 
 <div id="MainContainer">
 
- <div id="SubContainer">
+ <div id="SubContainer" <?php if(@$admin) echo 'class="Admin"'; ?> >

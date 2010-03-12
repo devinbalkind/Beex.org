@@ -11,6 +11,7 @@ class Admin extends Controller {
 		$this->load->model('MAdmin');
 		$this->load->library('beex');
 		$this->data['header']['title'] = 'Beex Admin';
+		$this->data['header']['admin'] = $this->data['footer']['admin'] = true;
 		$this->data['data']['message'] = '';
 		$this->data['data']['item'] = '';
 		$this->data['data']['username'] = $this->session->userdata('username');
@@ -53,6 +54,7 @@ class Admin extends Controller {
 			$data['list'] = $this->MAdmin->getDonors('', $sort, $dir);
 			$data['table'] = 'donors';
 			$data['sort'] = array('by'=>$sort, 'dir'=>$dir);
+			$data['datatable'] = '';
 			
 			// Donation Numbers
 			
@@ -155,7 +157,7 @@ class Admin extends Controller {
 			$data['list'] = $this->MAdmin->getChallenges("challenges.cluster_id = $id", $sort, $dir);
 			$data['cluster'] = $this->MAdmin->getCluster($id);
 			$data['nochallenges'] = $this->MAdmin->getNoChallenges($id);
-			echo $this->db->last_query();
+			//echo $this->db->last_query();
 			$data['table'] = 'challenges';
 			$data['sort'] = array('by'=>$sort, 'dir'=>$dir);
 			$data['id'] = $id;
@@ -168,14 +170,77 @@ class Admin extends Controller {
 		
 	}
 	
-	function users() {
+	function npo($id, $sort = 'created', $dir = 'desc') {
 		
 		$data = $this->data;
 		
 		if($this->session->userdata('super_user')) {
+			$data['list'] = $this->MAdmin->getChallenges("challenges.challenge_npo = $id", $sort, $dir);
+			$data['npo'] = $this->MAdmin->getNpo($id);
+			$data['nochallenges'] = $this->MAdmin->getNoChallenges($id, 'npos');
+			//echo $this->db->last_query();
+			$data['table'] = 'challenges';
+			$data['sort'] = array('by'=>$sort, 'dir'=>$dir);
+			$data['id'] = $id;
+			$this->load->view('admin/view_npo', $data);
+		}
+		else {
 			
-			$data['list'] = $this->MAdmin->getList('users');
+			$this->load->view('admin/not_authorized', $data);
+		}
+		
+	}
+	
+	function user($id, $sort = 'created', $dir = 'desc') {
+		
+		$data = $this->data;
+		
+		if($this->session->userdata('super_user')) {
+			$data['challenges'] = $this->MAdmin->getChallenges(array("teammates.user_id"=>$id), $sort, $dir);
+			$data['clusters'] = $this->MAdmin->getClusters(array("admins.user_id"=>$id), $sort, $dir);
+			//$data['user'] = $this->MAdmin->getUser($id);
+			
+			print_r($data);
+		
+			$data['sort'] = array('by'=>$sort, 'dir'=>$dir);
+			$data['id'] = $id;
+			$this->load->view('admin/view_user', $data);
+		}
+		else {
+			
+			$this->load->view('admin/not_authorized', $data);
+		}
+		
+	}
+	
+	
+	function npos($sort = 'name', $dir = 'desc') {
+
+		$data = $this->data;
+		
+		if($this->session->userdata('super_user')) {
+			$data['id'] = '';
+			$data['list'] = $this->MAdmin->getNpos('', $sort, $dir);
+			$data['table'] = 'npos';
+			$data['sort'] = array('by'=>$sort, 'dir'=>$dir);
+			$this->load->view('admin/view_list', $data);
+		}
+		else {
+			
+			$this->load->view('admin/not_authorized', $data);
+		}
+		
+	}
+	
+	function users($sort = 'created', $dir = 'desc') {
+
+		$data = $this->data;
+		
+		if($this->session->userdata('super_user')) {
+			$data['id'] = '';
+			$data['list'] = $this->MAdmin->getUsers('', $sort, $dir);
 			$data['table'] = 'users';
+			$data['sort'] = array('by'=>$sort, 'dir'=>$dir);
 			$this->load->view('admin/view_list', $data);
 		}
 		else {

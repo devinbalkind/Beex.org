@@ -1,6 +1,7 @@
  
 
  
+	<?php if(@$admin) echo "</div>" ?>
  </div>
 </div>
 <div id="Footer">

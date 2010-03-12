@@ -2,16 +2,22 @@
 
 $this->load->view('framework/header', $header);
 ?>
-<link rel="stylesheet" href="<?php echo base_url(); ?>styles/admin.css" />
-<div class="Admin">
 	
 <?php $this->load->view('admin/menu'); ?>
 
-<h2 style="text-transform:capitalize;"><?php echo $table; ?></h2>
+<h2 style="text-transform:capitalize;">Challenges for <?php //echo $user->firstname.' '.$user->lastname; ?></h2>
 
 <?php 
 
-echo $this->MAdmin->generateTable($table, $list, $sort, @$id);
+echo $this->MAdmin->generateTable('challenges', $challenges, $sort, @$id);
+
+?>
+
+<h2 style="text-transform:capitalize;">Clusters for <?php //echo $user->firstname.' '.$user->lastname; ?></h2>
+
+<?php 
+
+echo $this->MAdmin->generateTable('clusters', $clusters, $sort, @$id);
 
 ?>
 
@@ -88,7 +94,7 @@ jQuery(document).ready(function(){
 
 });
 </script>
-</div>
+
 <?php
 
 $this->load->view('framework/footer');
