@@ -8,7 +8,7 @@ if($message) {
 	echo "</span></p>";
 }
 
-echo "<h2>".$header['title']."</h2>";
+echo "<h2>NONPROFIT LOGIN</h2>";
 $attributes = array('id' => 'login');
 echo form_open('npo/login', $attributes);
 echo "<table border=0 cellpadding=0 cellspacing=0>";

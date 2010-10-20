@@ -75,7 +75,7 @@ class MAdmin extends Model{
 			
 			'name' => array('name' => "NPO Name", 'type' => 'data', 'link' => 'admin/npo'),
 			'approve' => array('name'=>'Approved', 'type'=>'approve'),
-			'edit' => array('name' => 'Edit', 'value'=>'Edit', 'link'=> 'user/edit', 'type' => 'edit'),
+			'edit' => array('name' => 'Edit', 'value'=>'Edit', 'link'=> 'npo/edit', 'type' => 'edit'),
 			'delete' => array('name'=>'Delete', 'value' => 'Delete', 'type' => 'delete')
 			
 		);

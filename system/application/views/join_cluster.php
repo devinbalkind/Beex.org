@@ -51,7 +51,7 @@ $this->load->view('framework/header', $header);
         <img src="/beex/images/temp/search.gif" style="margin-bottom:10px;"/>-->
         <div id="TheClusters" class="form">
         	<h2 class="title" style="background-color:#EFAB32; color:#fff; padding:5px 5px; width:auto;"><?php echo $item->cluster_title; ?></h2>
-              <?php $this->load->view('challenge_form.php', array('cluster' => $item, 'new'=>true, 'username'=>$data['username'], 'user_id' => $data['user_id'], 'message' => $message)); ?> 
+              <?php $this->load->view('challenge_new_form.php', array('cluster' => $item, 'new'=>true, 'username'=>$data['username'], 'user_id' => $data['user_id'], 'message' => $message)); ?> 
                
             
         </div>
